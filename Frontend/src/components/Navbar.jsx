@@ -1,14 +1,13 @@
 import React from "react";
+import "../styles/global.css"; // Import global styles
 
 const Navbar = () => {
   return (
-    <nav className="bg-blue-500 text-white p-4">
-      <div className="container flex items-center">
+    <nav className="navbar">
+      <div className="navbar-container">
         {/* Logo and Title */}
-        <div className="flex items-center w-full">
-          <img src="logo.png" alt="Logo" className="h-10 w-10 mr-2" />
-          <span className="text-xl font-bold">Asset Management</span>
-        </div>
+        <img src="logo.png" alt="Logo" className="navbar-logo" />
+        <span className="navbar-title">Asset Management</span>
       </div>
     </nav>
   );
