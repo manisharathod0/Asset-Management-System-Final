@@ -1,16 +1,11 @@
-import { useState } from 'react'
-import './App.css'
+import Navbar from "./components/Navbar";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <>
-    <h1 class="text-3xl font-bold underline">
-   Welcome to AMS
-  </h1>
-    </>
-  )
-}
+    <div className="h-screen flex flex-col">
+      <Navbar />
+    </div>
+  );
+};
 
-export default App
+export default App;
