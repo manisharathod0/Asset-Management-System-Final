@@ -1,0 +1,217 @@
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Menu, X, ChevronDown, Home, Settings, User, Package, QrCode, Wrench, BarChart2, LogOut
+} from "lucide-react";
+
+const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState(null);
+  const sidebarRef = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate(); // Initialize navigate
+
+  // Extract role from URL path (e.g., /admin, /manager, /employee)
+  const role = location.pathname.split("/")[1];
+
+  const toggleSubMenu = (label) => {
+    setIsOpen(true); // Ensure sidebar opens when a submenu is clicked
+    setOpenMenu((prev) => (prev === label ? null : label));
+  };  
+
+  const handleSidebarToggle = () => {
+    setIsOpen((prev) => {
+      if (prev) setOpenMenu(null);
+      return !prev;
+    });
+  };
+
+  const handleClickOutside = (event) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      setIsOpen(false);
+      setOpenMenu(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Logout function to redirect to "/"
+  const onLogout = () => {
+    navigate("/"); // Redirect to home page
+  };
+
+  const menuItems = {
+    admin: [
+      { icon: Home, label: "Dashboard", path: "/admin/dashboard" },
+      {
+        icon: Package, label: "Assets Management",
+        subItems: [
+          { name: "All Assets", path: "/admin/assets" },
+          { name: "Add New Asset", path: "/admin/add-asset" },
+          { name: "Asset Categories", path: "/admin/categories" },
+          { name: "Asset History", path: "/admin/history" }
+        ]
+      },
+      {
+        icon: User, label: "Asset Allocation",
+        subItems: [
+          { name: "Assign Asset", path: "/admin/assign-asset" },
+          { name: "Return Asset", path: "/admin/return-asset" },
+          { name: "Asset Requests", path: "/admin/asset-requests" }
+        ]
+      },
+      {
+        icon: QrCode, label: "QR Code Management",
+        subItems: [
+          { name: "Generate QR Code", path: "/admin/generate-qr" },
+          { name: "Scan QR Code", path: "/admin/scan-qr" },
+          { name: "QR Code Logs", path: "/admin/qr-logs" }
+        ]
+      },
+      {
+        icon: Wrench, label: "Maintenance & Repairs",
+        subItems: [
+          { name: "Scheduled Maintenance", path: "/admin/scheduled-maintenance" },
+          { name: "Request Repair", path: "/admin/request-repair" },
+          { name: "Repair Status", path: "/admin/repair-status" }
+        ]
+      },
+      {
+        icon: BarChart2, label: "Reports & Analytics",
+        subItems: [
+          { name: "Asset Reports", path: "/admin/asset-reports" },
+          { name: "Maintenance Reports", path: "/admin/maintenance-reports" },
+          { name: "Usage Reports", path: "/admin/usage-reports" }
+        ]
+      },
+      {
+        icon: User, label: "Users & Roles",
+        subItems: [
+          { name: "All Users", path: "/admin/all-users" },
+          { name: "Add User", path: "/admin/add-user" },
+          { name: "Role Management", path: "/admin/role-management" }
+        ]
+      },
+      {
+        icon: Settings, label: "Settings",
+        subItems: [
+          { name: "General Settings", path: "/admin/settings" },
+          { name: "Notification Settings", path: "/admin/notifications" },
+          { name: "Backup & Restore", path: "/admin/backup" }
+        ]
+      }
+    ],
+    manager: [
+      { icon: Home, label: "Dashboard", path: "/manager/dashboard" },
+      {
+        icon: Package, label: "Asset Requests",
+        subItems: [
+          { name: "Request New Asset", path: "/manager/request-asset" },
+          { name: "Pending Requests", path: "/manager/pending-requests" }
+        ]
+      },
+      {
+        icon: User, label: "Assigned Assets",
+        subItems: [
+          { name: "View Assigned Assets", path: "/manager/assigned-assets" },
+          { name: "Return Asset", path: "/manager/return-asset" },
+          { name: "Asset Condition Reports", path: "/manager/asset-condition-reports" }
+        ]
+      },
+      {
+        icon: QrCode, label: "QR Code Management",
+        subItems: [
+          { name: "Scan QR Code", path: "/manager/scan-qr" },
+          { name: "QR Code Logs", path: "/manager/qr-logs" }
+        ]
+      },
+      {
+        icon: Wrench, label: "Maintenance Requests",
+        subItems: [
+          { name: "Report an Issue", path: "/manager/report-issue" },
+          { name: "Track Requests", path: "/manager/track-requests" }
+        ]
+      },
+      {
+        icon: User, label: "Employees & Requests",
+        subItems: [
+          { name: "Manage Employee Requests", path: "/manager/employee-requests" }
+        ]
+      }
+    ],
+    employee: [
+      { icon: Home, label: "Dashboard", path: "/employee/dashboard" },
+      {
+        icon: Package, label: "My Assets",
+        subItems: [
+          { name: "View My Assets", path: "/employee/my-assets" },
+          { name: "Return Request", path: "/employee/return-request" },
+          { name: "Report an Issue", path: "/employee/report-issue" }
+        ]
+      },
+      {
+        icon: QrCode, label: "QR Code Scanner",
+        subItems: [{ name: "Scan QR Code", path: "/employee/scan-qr" }]
+      },
+      {
+        icon: Package, label: "Request Asset",
+        subItems: [
+          { name: "Request New Asset", path: "/employee/request-asset" },
+          { name: "View Request Status", path: "/employee/request-status" }
+        ]
+      },
+      {
+        icon: Settings, label: "Help & Support",
+        subItems: [
+          { name: "Guidelines", path: "/employee/guidelines" },
+          { name: "Contact IT/Admin", path: "/employee/contact-support" }
+        ]
+      }
+    ]
+  };
+
+  return (
+    <div className="sidebar-container">
+      <div ref={sidebarRef} className={`sidebar ${isOpen ? "open" : "closed"}`}>
+        <button className="toggle-btn" onClick={handleSidebarToggle}>
+          {isOpen ? <X size={26} /> : <Menu size={26} />}
+        </button>
+        <nav className="sidebar-nav">
+          <ul className="menu-list">
+            {menuItems[role]?.map((item, index) => (
+              <li key={index} className="menu-item">
+                <div className="menu-item-header" onClick={() => toggleSubMenu(item.label)}>
+                  <Link to={item.path || "#"} className="menu-item-icon">
+                    {item.icon && <item.icon size={24} />} {isOpen && item.label}
+                  </Link>
+                  {item.subItems && isOpen && (
+                    <ChevronDown size={18} className={`rotate-btn ${openMenu === item.label ? "rotate" : ""}`} />
+                  )}
+                </div>
+                {item.subItems && openMenu === item.label && isOpen && (
+                  <ul className="sub-menu">
+                    {item.subItems.map((subItem, subIndex) => (
+                      <li key={subIndex} className="sub-menu-item">
+                        <Link to={subItem.path}>{subItem.name}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <button onClick={onLogout} className="logout-btn">
+          <LogOut size={24} /> {isOpen && "Logout"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;

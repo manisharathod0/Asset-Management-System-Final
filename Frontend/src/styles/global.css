@@ -6,18 +6,23 @@
     --primary-medium: #3A6D8C;
     --primary-light: #6A9AB0;
     --accent: #EAD8B1;
-    --background-light: #f3f4f6; /* Light gray */
+    --background-light: #f3f4f6;
     --white: #ffffff;
     --shadow: rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ Add padding-top to prevent navbar overlap */
+/* Global Styles */
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--background-light);
     color: var(--primary-dark);
     margin: 0;
-    padding: 0;  /* ✅ This ensures content is not hidden under navbar */
+    padding: 0;
+    overflow: hidden; /* ✅ Prevents entire page from scrolling */
+}
+
+.main-content {
+    display: flex;
 }
 
 /* Navbar */
@@ -112,4 +117,148 @@ body {
 
 .login-button:hover {
     background-color: var(--primary-medium);
+}
+
+/* Sidebar */
+.sidebar-container {
+    display: flex;
+}
+
+.sidebar {
+    height: calc(100vh - 60px); /* Ensures it fits below navbar */
+    background-color: var(--primary-dark);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.5s ease-in-out;
+    padding-bottom: 1rem;
+    margin-top: 60px;
+    overflow-y: auto; /* ✅ Makes the sidebar scrollable */
+    overflow-x: hidden;
+}
+
+/* ✅ Custom Scrollbar for Sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--primary-medium);
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-light);
+}
+
+.sidebar.open {
+    width: 16rem;
+}
+
+.sidebar.closed {
+    width: 4rem;
+}
+
+.toggle-btn {
+    margin-top: 1rem;
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--white);
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+    flex: 1;
+    padding-top: 1rem;
+}
+
+.menu-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.menu-item {
+    padding: 0.8rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-bottom: 0.5rem;
+}
+
+/* ✅ Improved Hover Effects */
+.menu-item:hover {
+    background-color: rgba(106, 154, 176, 0.3);
+    color: var(--white);
+}
+
+/* Menu Headers */
+.menu-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-item-icon {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.rotate-btn {
+    transition: transform 0.3s ease-in-out;
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+/* Submenu */
+.sub-menu {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    list-style: none;
+}
+
+.sub-menu-item {
+    color: #9ca3af;
+    padding: 0.4rem 0;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+/* ✅ Improved Submenu Hover */
+.sub-menu-item:hover {
+    color: var(--accent);
+    background-color: rgba(234, 216, 177, 0.2);
+    padding: 0.4rem;
+    border-radius: 4px;
+}
+
+/* Empty Menu State */
+.no-menu-items {
+    color: #9ca3af;
+}
+
+/* Logout Button */
+.logout-btn {
+    width: 100%;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    background-color: transparent;
+    border: none;
+}
+
+/* ✅ Improved Logout Button Hover */
+.logout-btn:hover {
+    color: #fff;
+    background-color: rgba(234, 216, 177, 0.3);
 }
