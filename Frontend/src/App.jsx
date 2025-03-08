@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
+import RequestNewAsset from "./dashboard/Manager/RequestNewAsset"; // Updated correct path
 import NotFound from "./pages/NotFound";
 import "./styles/global.css";
 import "./App.css";
@@ -24,7 +25,9 @@ const Layout = ({ children }) => {
       <Navbar />
       <div className="flex main-content">
         {showSidebar && <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />}
-        <div className={`flex-1 transition-all duration-500 ${isOpen ? "ml-64" : "ml-16"}`}>{children}</div>
+        <div className={`flex-1 transition-all duration-500 ${isOpen ? "ml-64" : "ml-16"}`}>
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -34,8 +37,8 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
+        <Route 
+          path="/" 
           element={
             <div className="app-container">
               <Navbar />
@@ -43,10 +46,11 @@ const App = () => {
                 <LoginPage />
               </div>
             </div>
-          }
+          } 
         />
         <Route path="/admin/*" element={<Layout><AdminDashboard /></Layout>} />
         <Route path="/manager/*" element={<Layout><ManagerDashboard /></Layout>} />
+        <Route path="/manager/request-new-asset" element={<Layout><RequestNewAsset /></Layout>} /> {/* Fixed Route */}
         <Route path="/employee/*" element={<Layout><EmployeeDashboard /></Layout>} />
         <Route path="*" element={<NotFound />} />
       </Routes>

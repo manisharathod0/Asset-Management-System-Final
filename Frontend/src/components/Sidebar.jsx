@@ -105,7 +105,7 @@ const Sidebar = ({isOpen, setIsOpen}) => {
       {
         icon: Package, label: "Asset Requests",
         subItems: [
-          { name: "Request New Asset", path: "/manager/request-asset" },
+          { name: "Request New Asset", path: "/manager/request-new-asset" },
           { name: "Pending Requests", path: "/manager/pending-requests" }
         ]
       },
