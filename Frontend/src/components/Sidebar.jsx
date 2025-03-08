@@ -1,23 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  Menu, X, ChevronDown, Home, Settings, User, Package, QrCode, Wrench, BarChart2, LogOut
-} from "lucide-react";
+import { Menu, X, ChevronDown, Home, Settings, User, Package, QrCode, Wrench, BarChart2, LogOut } from "lucide-react";
 
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const Sidebar = ({isOpen, setIsOpen}) => {
   const [openMenu, setOpenMenu] = useState(null);
   const sidebarRef = useRef(null);
   const location = useLocation();
-  const navigate = useNavigate(); // Initialize navigate
-
-  // Extract role from URL path (e.g., /admin, /manager, /employee)
+  const navigate = useNavigate();
   const role = location.pathname.split("/")[1];
 
   const toggleSubMenu = (label) => {
-    setIsOpen(true); // Ensure sidebar opens when a submenu is clicked
+    setIsOpen(true);
     setOpenMenu((prev) => (prev === label ? null : label));
-  };  
+  };
 
   const handleSidebarToggle = () => {
     setIsOpen((prev) => {
@@ -40,9 +35,8 @@ const Sidebar = () => {
     };
   }, []);
 
-  // Logout function to redirect to "/"
   const onLogout = () => {
-    navigate("/"); // Redirect to home page
+    navigate("/");
   };
 
   const menuItems = {
@@ -176,27 +170,25 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="sidebar-container">
-      <div ref={sidebarRef} className={`sidebar ${isOpen ? "open" : "closed"}`}>
-        <button className="toggle-btn" onClick={handleSidebarToggle}>
+    <div className="flex h-screen relative">
+      <div ref={sidebarRef} className={`h-screen bg-[var(--primary-dark)] text-[var(--white)] flex flex-col transition-all duration-500 fixed top-0 left-0 ${isOpen ? "w-64" : "w-16"}`}>
+        <button className="mt-20 ml-2 p-2 text-[var(--white)]" onClick={handleSidebarToggle}>
           {isOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
-        <nav className="sidebar-nav">
-          <ul className="menu-list">
+        <nav className="flex-1 pt-4 pb-2">
+          <ul className="p-0 m-0 list-none">
             {menuItems[role]?.map((item, index) => (
-              <li key={index} className="menu-item">
-                <div className="menu-item-header" onClick={() => toggleSubMenu(item.label)}>
-                  <Link to={item.path || "#"} className="menu-item-icon">
+              <li key={index} className="p-3 rounded-md hover:bg-[var(--primary-medium)] cursor-pointer ml-1 mb-2">
+                <div className="flex justify-between items-center" onClick={() => toggleSubMenu(item.label)}>
+                  <Link to={item.path || "#"} className="flex gap-3">
                     {item.icon && <item.icon size={24} />} {isOpen && item.label}
                   </Link>
-                  {item.subItems && isOpen && (
-                    <ChevronDown size={18} className={`rotate-btn ${openMenu === item.label ? "rotate" : ""}`} />
-                  )}
+                  {item.subItems && isOpen && <ChevronDown size={18} className={`${openMenu === item.label ? "rotate-180" : ""}`} />}
                 </div>
                 {item.subItems && openMenu === item.label && isOpen && (
-                  <ul className="sub-menu">
+                  <ul className="ml-6 mt-2 list-none">
                     {item.subItems.map((subItem, subIndex) => (
-                      <li key={subIndex} className="sub-menu-item">
+                      <li key={subIndex} className="text-[var(--background-light)] p-2 cursor-pointer hover:text-[var(--accent)]">
                         <Link to={subItem.path}>{subItem.name}</Link>
                       </li>
                     ))}
@@ -206,9 +198,11 @@ const Sidebar = () => {
             ))}
           </ul>
         </nav>
-        <button onClick={onLogout} className="logout-btn">
-          <LogOut size={24} /> {isOpen && "Logout"}
-        </button>
+        <div className="mt-auto pb-4">
+          <button onClick={onLogout} className="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-[var(--primary-medium)]">
+            <LogOut size={24} /> {isOpen && "Logout"}
+          </button>
+        </div>
       </div>
     </div>
   );

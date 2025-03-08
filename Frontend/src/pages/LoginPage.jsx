@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/global.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,31 +26,34 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2 className="login-title">Login</h2>
+    <div className="flex justify-center items-center h-screen bg-[var(--background-light)]">
+      <div className="bg-[var(--white)] p-8 rounded-lg shadow-lg w-96">
+        <h2 className="text-2xl font-bold text-center mb-6 text-[var(--primary-dark)]">Login</h2>
         <form onSubmit={handleLogin}>
-          <div className="login-field">
-            <label className="login-label">Email</label>
+          <div className="mb-4">
+            <label className="block text-[var(--primary-medium)] mb-2">Email</label>
             <input
               type="email"
-              className="login-input"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary-medium)]"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div className="login-field">
-            <label className="login-label">Password</label>
+          <div className="mb-4">
+            <label className="block text-[var(--primary-medium)] mb-2">Password</label>
             <input
               type="password"
-              className="login-input"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary-medium)]"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="login-button">
+          <button
+            type="submit"
+            className="w-full bg-[var(--primary-dark)] text-[var(--white)] p-2 rounded hover:bg-[var(--primary-medium)] transition"
+          >
             Login
           </button>
         </form>
