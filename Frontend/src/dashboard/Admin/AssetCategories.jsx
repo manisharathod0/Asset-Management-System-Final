@@ -22,7 +22,7 @@ const AssetCategories = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-xl max-w-lg mx-auto">
+    <div className="p-6 bg-white shadow-lg rounded-xl max-w-lg mx-auto mt-16">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 text-center">Asset Categories</h2>
       <div className="flex gap-2 mb-4">
         <input

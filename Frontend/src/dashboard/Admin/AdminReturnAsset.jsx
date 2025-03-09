@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-const ReturnAssetLog = () => {
+const AdminReturnAsset = () => {
   const [logs] = useState([
     { id: 1, asset: "Dell Laptop", date: "2024-02-20", condition: "Good", employee: "John Doe", note: "No issues" },
     { id: 2, asset: "Office Chair", date: "2024-02-18", condition: "Minor Damage", employee: "Jane Smith", note: "Slight tear on cushion" },
@@ -10,7 +10,7 @@ const ReturnAssetLog = () => {
 
   return (
     <motion.div 
-      className="p-6 bg-white shadow-lg rounded-xl max-w-3xl mx-auto"
+      className="p-6 bg-white shadow-lg rounded-xl max-w-3xl mx-auto mt-20"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
     >
@@ -58,4 +58,4 @@ const ReturnAssetLog = () => {
   );
 };
 
-export default ReturnAsset;
+export default AdminReturnAsset;
