@@ -19,7 +19,7 @@ const AddNewAsset = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-xl">
+    <div className="p-6 bg-white shadow-lg rounded-xl mt-16">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add New Asset</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const ReturnAsset = () => {
+const ManagerReturnAsset = () => {
   const [assets, setAssets] = useState([
     {
       id: 1,
@@ -64,4 +64,4 @@ const ReturnAsset = () => {
   );
 };
 
-export default ReturnAsset;
+export default ManagerReturnAsset;

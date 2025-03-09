@@ -9,15 +9,22 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AllAssets from "./dashboard/Admin/AllAssets";
+import AddNewAsset from "./dashboard/Admin/AddNewAsset";
+import AssetCategories from "./dashboard/Admin/AssetCategories";
+import AssetHistory from "./dashboard/Admin/AssetHistory";
+import AssignAsset from "./dashboard/Admin/AssignAsset";
+import AdminReturnAsset from "./dashboard/Admin/AdminReturnAsset";  // Renamed for Admin
+import AssetRequests from "./dashboard/Admin/AssetRequests";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import RequestNewAsset from "./dashboard/Manager/RequestNewAsset";
 import PendingRequests from "./dashboard/Manager/PendingRequests";
+import ManagerReturnAsset from "./dashboard/Manager/ManagerReturnAsset";  // Renamed for Manager
 import ViewAssignedAssets from "./dashboard/Manager/ViewAssignedAssets";
 import NotFound from "./pages/NotFound";
 import "./styles/global.css";
 import "./App.css";
-import ReturnAsset from "./dashboard/Manager/ReturnAsset";
 import AssetConditionReports from "./dashboard/Manager/AssetConditionReports";
 import ReportAnIssue from "./dashboard/Manager/ReportanIssue";
 import TrackRequests from "./dashboard/Manager/TrackRequests";
@@ -75,14 +82,21 @@ const App = () => {
             </Layout>
           }
         />
-         <Route
+        <Route path="/admin/all-assets" element={<Layout><AllAssets /></Layout>} />
+        <Route path="/admin/add-asset" element={<Layout><AddNewAsset /></Layout>} />
+        <Route path="/admin/categories" element={<Layout><AssetCategories /></Layout>} />
+        <Route path="/admin/history" element={<Layout><AssetHistory /></Layout>} />
+        <Route path="/admin/assign-asset" element={<Layout><AssignAsset /></Layout>} />
+        <Route path="/admin/return-asset" element={<Layout><AdminReturnAsset /></Layout>} />
+        <Route path="/admin/asset-requests" element={<Layout><AssetRequests /></Layout>} />
+        <Route
           path="/admin/scheduled-maintenance"
           element={
             <Layout>
               <ScheduledMaintenance />
             </Layout>
           }
-        />
+/>
         <Route
           path="/admin/request-repair"
           element={
@@ -124,14 +138,7 @@ const App = () => {
             </Layout>
           }
         />{" "}
-        <Route
-          path="/manager/return-assets"
-          element={
-            <Layout>
-              <ReturnAsset />
-            </Layout>
-          }
-        />{" "}
+        <Route path="/manager/return-assets" element={<Layout><ManagerReturnAsset /></Layout>} />{" "}
         <Route
           path="/manager/asset-condition-reports"
           element={
