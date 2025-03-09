@@ -23,6 +23,8 @@ import ReportAnIssue from "./dashboard/Manager/ReportanIssue";
 import TrackRequests from "./dashboard/Manager/TrackRequests";
 import ManageEmployeeRequests from "./dashboard/Manager/ManageEmployeeRequests";
 import QRCodeLogs from "./dashboard/Manager/QRCodeLogs";
+import ScheduledMaintenance from "./dashboard/Admin/ScheduleMaintenance";
+import RequestRepair from "./dashboard/Admin/RequestRepair";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -70,6 +72,22 @@ const App = () => {
           element={
             <Layout>
               <AdminDashboard />
+            </Layout>
+          }
+        />
+         <Route
+          path="/admin/scheduled-maintenance"
+          element={
+            <Layout>
+              <ScheduledMaintenance />
+            </Layout>
+          }
+        />
+        <Route
+          path="/admin/request-repair"
+          element={
+            <Layout>
+              <RequestRepair />
             </Layout>
           }
         />

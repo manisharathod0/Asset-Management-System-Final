@@ -76,28 +76,17 @@ const Sidebar = ({isOpen, setIsOpen}) => {
         ]
       },
       {
-        icon: BarChart2, label: "Reports & Analytics",
-        subItems: [
-          { name: "Asset Reports", path: "/admin/asset-reports" },
-          { name: "Maintenance Reports", path: "/admin/maintenance-reports" },
-          { name: "Usage Reports", path: "/admin/usage-reports" }
-        ]
+        icon: BarChart2, label: "Reports & Analytics", path: "/admin/asset-reports"
       },
       {
         icon: User, label: "Users & Roles",
         subItems: [
           { name: "All Users", path: "/admin/all-users" },
-          { name: "Add User", path: "/admin/add-user" },
-          { name: "Role Management", path: "/admin/role-management" }
+          { name: "Add User", path: "/admin/add-user" }
         ]
       },
       {
-        icon: Settings, label: "Settings",
-        subItems: [
-          { name: "General Settings", path: "/admin/settings" },
-          { name: "Notification Settings", path: "/admin/notifications" },
-          { name: "Backup & Restore", path: "/admin/backup" }
-        ]
+        icon: Settings, label: "Settings", path: "/admin/settings"
       }
     ],
     manager: [
