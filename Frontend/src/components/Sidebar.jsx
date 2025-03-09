@@ -84,9 +84,6 @@ const Sidebar = ({isOpen, setIsOpen}) => {
           { name: "All Users", path: "/admin/all-users" },
           { name: "Add User", path: "/admin/add-user" }
         ]
-      },
-      {
-        icon: Settings, label: "Settings", path: "/admin/settings"
       }
     ],
     manager: [
