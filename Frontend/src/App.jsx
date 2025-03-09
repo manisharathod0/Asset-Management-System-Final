@@ -32,6 +32,10 @@ import ManageEmployeeRequests from "./dashboard/Manager/ManageEmployeeRequests";
 import QRCodeLogs from "./dashboard/Manager/QRCodeLogs";
 import ScheduledMaintenance from "./dashboard/Admin/ScheduleMaintenance";
 import RequestRepair from "./dashboard/Admin/RequestRepair";
+import RepairStatus from "./dashboard/Admin/RepairStatus";
+import Reports from "./dashboard/Admin/Reports";
+import AllUsers from "./dashboard/Admin/AllUsers";
+import AddUser from "./dashboard/Admin/AddUser";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -88,7 +92,11 @@ const App = () => {
         <Route path="/admin/history" element={<Layout><AssetHistory /></Layout>} />
         <Route path="/admin/assign-asset" element={<Layout><AssignAsset /></Layout>} />
         <Route path="/admin/return-asset" element={<Layout><AdminReturnAsset /></Layout>} />
+        <Route path="/admin/repair-status" element={<Layout><RepairStatus /></Layout>} />
         <Route path="/admin/asset-requests" element={<Layout><AssetRequests /></Layout>} />
+        <Route path="/admin/asset-reports" element={<Layout><Reports /></Layout>} />
+        <Route path="/admin/all-users" element={<Layout><AllUsers /></Layout>} />
+        <Route path="/admin/add-user" element={<Layout><AddUser /></Layout>} />
         <Route
           path="/admin/scheduled-maintenance"
           element={
