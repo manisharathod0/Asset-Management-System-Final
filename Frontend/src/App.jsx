@@ -36,6 +36,12 @@ import RepairStatus from "./dashboard/Admin/RepairStatus";
 import Reports from "./dashboard/Admin/Reports";
 import AllUsers from "./dashboard/Admin/AllUsers";
 import AddUser from "./dashboard/Admin/AddUser";
+import ViewMyAsset from "./dashboard/Employee/ViewMyAsset";
+import ContactAdmin from "./dashboard/Employee/ContactAdmin";
+import Guidlines from "./dashboard/Employee/Guidlines";
+import ScanQRCode from "./dashboard/Employee/ScanQRCode";
+import ViewRequestStatus from "./dashboard/Employee/ViewRequestStatus";
+import ReturnRequest from "./dashboard/Employee/ReturnRequest";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -96,7 +102,15 @@ const App = () => {
         <Route path="/admin/asset-requests" element={<Layout><AssetRequests /></Layout>} />
         <Route path="/admin/asset-reports" element={<Layout><Reports /></Layout>} />
         <Route path="/admin/all-users" element={<Layout><AllUsers /></Layout>} />
-        <Route path="/admin/add-user" element={<Layout><AddUser /></Layout>} />
+        <Route path="/admin/add-user" element={<Layout><AddUser /></Layout>} /> 
+        <Route path="/employee/view-my-assets" element={<Layout><ViewMyAsset /></Layout>} />
+        <Route path="/employee/contact-support" element={<Layout><ContactAdmin /></Layout>} />
+        <Route path="/employee/guidelines" element={<Layout><Guidlines /></Layout>} />
+        <Route path="/employee/report-issue" element={<Layout><ReportAnIssue /></Layout>} />
+        <Route path="/employee/request-asset" element={<Layout><RequestNewAsset /></Layout>} />
+        <Route path="/employee/return-request" element={<Layout><ReturnRequest /></Layout>} />
+        <Route path="/employee/scan-qr" element={<Layout><ScanQRCode /></Layout>} />
+        <Route path="/employee/request-status" element={<Layout><ViewRequestStatus /></Layout>} />
         <Route
           path="/admin/scheduled-maintenance"
           element={

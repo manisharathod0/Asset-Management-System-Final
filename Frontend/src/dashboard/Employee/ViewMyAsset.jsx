@@ -9,7 +9,7 @@ const ViewMyAsset = () => {
 
   return (
     <motion.div 
-      className="p-6 bg-white shadow-lg rounded-xl max-w-3xl mx-auto"
+      className="p-6 bg-white shadow-lg rounded-xl w-90vh m-40 mx-auto"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
     >
