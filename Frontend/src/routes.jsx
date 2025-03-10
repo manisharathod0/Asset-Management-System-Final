@@ -46,6 +46,7 @@ const AppRoutes = () => {
         <Route path="/manager/track-requests" element={<TrackRequests/>} />
         <Route path="/manager/manage-employee-requests" element={<ManageEmployeeRequests/>} />
         <Route path="/employee" element={<EmployeeDashboard />} />
+        <Route path="/employee/view-my-asset" element={<ViewMyAsset/>}/>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

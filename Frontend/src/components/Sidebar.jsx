@@ -127,9 +127,9 @@ const Sidebar = ({isOpen, setIsOpen}) => {
     employee: [
       { icon: Home, label: "Dashboard", path: "/employee/dashboard" },
       {
-        icon: Package, label: "My Assets",
+        icon: Package, label: "My Asset",
         subItems: [
-          { name: "View My Assets", path: "/employee/my-assets" },
+          { name: "View My Assets", path: "/employee/view-my-assets" },
           { name: "Return Request", path: "/employee/return-request" },
           { name: "Report an Issue", path: "/employee/report-issue" }
         ]
