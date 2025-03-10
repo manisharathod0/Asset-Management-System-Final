@@ -9,6 +9,7 @@ import EmployeeDashboard from "./pages/EmployeeDashboard";
 import NotFound from "./pages/NotFound";
 import "./styles/global.css";
 import "./App.css";
+import ViewMyAsset from "./dashboard/Employee/ViewMyAsset.jsx";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -48,6 +49,11 @@ const App = () => {
         <Route path="/admin/*" element={<Layout><AdminDashboard /></Layout>} />
         <Route path="/manager/*" element={<Layout><ManagerDashboard /></Layout>} />
         <Route path="/employee/*" element={<Layout><EmployeeDashboard /></Layout>} />
+        <Route path="/employee/view-my-asset"
+        element={<Layout><ViewMyAsset/>
+        </Layout>
+        }
+        />{""}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

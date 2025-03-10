@@ -4,6 +4,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import NotFound from "./pages/NotFound";
+import ViewMyAsset from "./dashboard/Employee/ViewMyAsset";
 
 const AppRoutes = () => {
   return (
@@ -13,6 +14,7 @@ const AppRoutes = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/manager" element={<ManagerDashboard />} />
         <Route path="/employee" element={<EmployeeDashboard />} />
+        <Route path="/employee/view-my-asset" element={<ViewMyAsset/>}/>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
