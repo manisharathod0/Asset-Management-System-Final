@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const ManagerReturnAsset = () => {
-  const [assets, setAssets] = useState([
+  const [assets] = useState([
     {
       id: 1,
       assetName: "Laptop",
@@ -23,8 +24,18 @@ const ManagerReturnAsset = () => {
   ]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-30 px-6">
-      <div className="max-w-5xl w-full p-8 bg-white shadow-lg rounded-xl">
+    <motion.div 
+      className="min-h-screen flex items-center justify-center bg-gray-100 py-30 px-6"
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        className="max-w-5xl w-full p-8 bg-white shadow-lg rounded-xl"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <h2 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
           Return Asset
         </h2>
@@ -42,25 +53,31 @@ const ManagerReturnAsset = () => {
             </thead>
             <tbody>
               {assets.map((asset, index) => (
-                <tr
+                <motion.tr
                   key={asset.id}
-                  className={`border-b border-gray-300 text-center ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
+                  className={`border-b border-gray-300 text-center ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
                 >
                   <td className="p-3">{asset.assetName}</td>
                   <td className="p-3">{asset.assetType}</td>
                   <td className="p-3">{asset.assignedTo}</td>
                   <td className="p-3">{asset.department}</td>
                   <td className="p-3">{asset.condition}</td>
-                  <td className="p-3 text-[#6A9AB0] font-semibold">{asset.returnStatus}</td>
-                </tr>
+                  <td className="p-3">
+                    <span className="px-3 py-1 rounded-full text-white font-semibold text-sm"
+                      style={{ backgroundColor: asset.returnStatus === "Pending" ? "#F59E0B" : "#22C55E" }}>
+                      {asset.returnStatus}
+                    </span>
+                  </td>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
