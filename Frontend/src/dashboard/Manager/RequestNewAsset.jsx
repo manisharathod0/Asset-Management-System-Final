@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const RequestNewAsset = () => {
   const [formData, setFormData] = useState({
@@ -30,12 +31,28 @@ const RequestNewAsset = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-30 px-6">
-      <div className="max-w-4xl w-full p-8 bg-white shadow-lg rounded-xl">
+    <motion.div 
+      className="min-h-screen flex items-center justify-center bg-gray-100 py-30 px-6"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        className="max-w-4xl w-full p-8 bg-white shadow-lg rounded-xl"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <h2 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
           Request New Asset
         </h2>
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <motion.form 
+          onSubmit={handleSubmit} 
+          className="grid grid-cols-2 gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
           <div>
             <label className="block text-gray-700 mb-1">Asset Name</label>
             <input
@@ -119,16 +136,18 @@ const RequestNewAsset = () => {
             />
           </div>
           <div className="col-span-2">
-            <button
+            <motion.button
               type="submit"
               className="w-full py-3 bg-[#3A6D8C] text-white rounded-lg hover:bg-[#001F3F] transition duration-200"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               Submit Request
-            </button>
+            </motion.button>
           </div>
-        </form>
-      </div>
-    </div>
+        </motion.form>
+      </motion.div>
+    </motion.div>
   );
 };
 
