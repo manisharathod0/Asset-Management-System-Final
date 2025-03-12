@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const ManageEmployeeRequests = () => {
   const [requests, setRequests] = useState([
@@ -11,8 +12,18 @@ const ManageEmployeeRequests = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-10 px-6">
-      <div className="max-w-4xl w-full p-8 bg-white shadow-lg rounded-xl">
+    <motion.div 
+      className="min-h-screen flex items-center justify-center bg-gray-100 py-10 px-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        className="max-w-4xl w-full p-8 bg-white shadow-lg rounded-xl"
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <h2 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
           Manage Employee Requests
         </h2>
@@ -27,8 +38,14 @@ const ManageEmployeeRequests = () => {
               </tr>
             </thead>
             <tbody>
-              {requests.map((req) => (
-                <tr key={req.id} className="border-t hover:bg-gray-100 transition duration-200">
+              {requests.map((req, index) => (
+                <motion.tr 
+                  key={req.id} 
+                  className="border-t hover:bg-gray-100 transition duration-200"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
                   <td className="py-3 px-5">{req.employee}</td>
                   <td className="py-3 px-5">{req.asset}</td>
                   <td
@@ -43,23 +60,25 @@ const ManageEmployeeRequests = () => {
                     {req.status}
                   </td>
                   <td className="py-3 px-5">
-                    <select
+                    <motion.select
                       value={req.status}
                       onChange={(e) => handleStatusChange(req.id, e.target.value)}
                       className="p-2 border rounded-md bg-white focus:ring-2 focus:ring-[#6A9AB0] cursor-pointer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <option value="Pending">Pending</option>
                       <option value="Approved">Approved</option>
                       <option value="Rejected">Rejected</option>
-                    </select>
+                    </motion.select>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
