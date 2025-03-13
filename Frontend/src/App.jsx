@@ -42,6 +42,8 @@ import Guidlines from "./dashboard/Employee/Guidlines";
 import ScanQRCode from "./dashboard/Employee/ScanQRCode";
 import ViewRequestStatus from "./dashboard/Employee/ViewRequestStatus";
 import ReturnRequest from "./dashboard/Employee/ReturnRequest";
+import SignUpPage from "./pages/SignUpPage";
+import WelcomePage from "./pages/WelcomePage";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -73,13 +75,38 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        {/* Welcome Page */}
         <Route
           path="/"
           element={
             <div className="app-container">
               <Navbar />
-              <div className="login-container">
+              <WelcomePage />
+            </div>
+          }
+        />
+
+        {/* Login Page */}
+        <Route
+          path="/login"
+          element={
+            <div className="app-container">
+              <Navbar />
+              <div className="auth-container">
                 <LoginPage />
+              </div>
+            </div>
+          }
+        />
+
+        {/* Sign Up Page */}
+        <Route
+          path="/signup"
+          element={
+            <div className="app-container">
+              <Navbar />
+              <div className="auth-container">
+                <SignUpPage />
               </div>
             </div>
           }

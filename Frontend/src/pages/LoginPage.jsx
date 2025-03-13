@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +24,10 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("user", JSON.stringify({ email, role: data.role, token: data.token }));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ email, role: data.role, token: data.token })
+        );
         navigate(`/${data.role}/dashboard`);
       } else {
         setError(data.message);
@@ -36,9 +40,11 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-[var(--background-light)]">
-      <div className="bg-[var(--white)] p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold text-center mb-6 text-[var(--primary-dark)]">Login</h2>
+    <div className="flex justify-center items-center h-screen bg-[#EAD8B1]">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 className="text-2xl font-bold text-center mb-6 text-[var(--primary-dark)]">
+          Login
+        </h2>
         {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
@@ -63,7 +69,7 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-[var(--primary-dark)] text-[var(--white)] p-2 rounded hover:bg-[var(--primary-medium)] transition disabled:opacity-50"
+            className="w-full bg-[var(--primary-dark)] text-white p-2 rounded hover:bg-[var(--primary-medium)] transition disabled:opacity-50"
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
