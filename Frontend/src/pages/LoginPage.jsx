@@ -1,8 +1,11 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Import the useAuth hook
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Access the login function from AuthContext
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,6 +30,7 @@ const Login = () => {
           "user",
           JSON.stringify({ email, role: data.role, token: data.token })
         );
+        login(); // Update the global authentication state
         navigate(`/${data.role}/dashboard`);
       } else {
         setError(data.message);
