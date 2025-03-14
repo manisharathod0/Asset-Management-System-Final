@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // Import the useAuth hook
@@ -30,7 +29,7 @@ const Login = () => {
           "user",
           JSON.stringify({ email, role: data.role, token: data.token })
         );
-        login(); // Update the global authentication state
+        login({ email, role: data.role }); // Pass user data to login function
         navigate(`/${data.role}/dashboard`);
       } else {
         setError(data.message);

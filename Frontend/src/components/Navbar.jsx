@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext"; // Adjust the import path as n
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth(); // Access the logout function
+  const { isAuthenticated, user } = useAuth(); // Access the authentication state and user data
   const [scrolled, setScrolled] = React.useState(false);
 
   // Add scroll effect
@@ -25,9 +25,24 @@ const Navbar = () => {
   // Handle title click
   const handleTitleClick = () => {
     if (isAuthenticated) {
-      logout(); // Log out the user if they are authenticated
+      // Navigate to the dashboard based on the user's role
+      switch (user?.role) {
+        case "admin":
+          navigate("/admin/dashboard");
+          break;
+        case "manager":
+          navigate("/manager/dashboard");
+          break;
+        case "employee":
+          navigate("/employee/dashboard");
+          break;
+        default:
+          navigate("/"); // Fallback for unknown roles
+      }
+    } else {
+      // Navigate to the Welcome Page if not authenticated
+      navigate("/");
     }
-    navigate("/"); // Navigate to the Welcome Page
   };
 
   return (
