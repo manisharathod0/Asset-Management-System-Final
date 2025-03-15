@@ -1,19 +1,20 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // Import the useAuth hook
 
-const Login = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth(); // Access the login function from AuthContext
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
@@ -25,14 +26,31 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // Save user data to localStorage
         localStorage.setItem(
           "user",
           JSON.stringify({ email, role: data.role, token: data.token })
         );
-        login({ email, role: data.role }); // Pass user data to login function
-        navigate(`/${data.role}/dashboard`);
+
+        // Update auth context
+        login({ email, role: data.role });
+
+        // Redirect to the respective dashboard based on the user's role
+        switch (data.role) {
+          case "admin":
+            navigate("/admin/dashboard");
+            break;
+          case "manager":
+            navigate("/manager/dashboard");
+            break;
+          case "employee":
+            navigate("/employee/dashboard");
+            break;
+          default:
+            navigate("/");
+        }
       } else {
-        setError(data.message);
+        setError(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
       setError("Server error. Please try again.");
@@ -49,13 +67,13 @@ const Login = () => {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#001F3F] to-[#3A6D8C] bg-clip-text text-transparent">
             Welcome Back
           </h1>
-          <p className="mt-2 text-gray-600">Sign in to continue to AssetEase</p>
+          <p className="mt-2 text-gray-600">Sign in to AssetEase to manage your assets</p>
         </div>
 
         {/* Card */}
         <div className="bg-white p-8 rounded-xl shadow-xl border border-gray-100">
           <h2 className="text-2xl font-bold text-center mb-6 text-[#001F3F]">
-            Login
+            Sign In
           </h2>
           
           {/* Error Message */}
@@ -96,14 +114,9 @@ const Login = () => {
             </div>
             
             <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[#3A6D8C] font-medium" htmlFor="password">
-                  Password
-                </label>
-                <a href="#" className="text-sm text-[#6A9AB0] hover:text-[#3A6D8C] transition-colors duration-200">
-                  Forgot password?
-                </a>
-              </div>
+              <label className="block text-[#3A6D8C] font-medium mb-2" htmlFor="password">
+                Password
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -120,6 +133,11 @@ const Login = () => {
                   required
                 />
               </div>
+              <div className="flex justify-end mt-2">
+                <Link to="/forgot-password" className="text-sm text-[#3A6D8C] hover:text-[#6A9AB0] transition-colors duration-200">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
             
             <button
@@ -127,7 +145,7 @@ const Login = () => {
               className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-300 ${
                 loading 
                   ? "bg-gray-400 cursor-not-allowed" 
-                  : "bg-gradient-to-r from-[#3A6D8C] to-[#6A9AB0] hover:shadow-lg transform hover:-translate-y-1"
+                  : "bg-gradient-to-r from-[#001F3F] to-[#3A6D8C] hover:shadow-lg transform hover:-translate-y-1"
               }`}
               disabled={loading}
             >
@@ -137,7 +155,7 @@ const Login = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Logging in...
+                  Signing In...
                 </span>
               ) : (
                 "Sign In"
@@ -145,12 +163,12 @@ const Login = () => {
             </button>
           </form>
           
-          {/* Sign Up Link */}
+          {/* Register Link */}
           <div className="text-center mt-6">
             <p className="text-gray-600">
               Don't have an account?{" "}
               <Link to="/signup" className="text-[#3A6D8C] font-medium hover:text-[#6A9AB0] transition-colors duration-200">
-                Sign Up
+                Create Account
               </Link>
             </p>
           </div>
@@ -160,4 +178,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
