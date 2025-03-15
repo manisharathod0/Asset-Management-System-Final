@@ -1,4 +1,3 @@
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,13 +14,13 @@ import AddNewAsset from "./dashboard/Admin/AddNewAsset";
 import AssetCategories from "./dashboard/Admin/AssetCategories";
 import AssetHistory from "./dashboard/Admin/AssetHistory";
 import AssignAsset from "./dashboard/Admin/AssignAsset";
-import AdminReturnAsset from "./dashboard/Admin/AdminReturnAsset";  // Renamed for Admin
+import AdminReturnAsset from "./dashboard/Admin/AdminReturnAsset"; // Renamed for Admin
 import AssetRequests from "./dashboard/Admin/AssetRequests";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import RequestNewAsset from "./dashboard/Manager/RequestNewAsset";
 import PendingRequests from "./dashboard/Manager/PendingRequests";
-import ManagerReturnAsset from "./dashboard/Manager/ManagerReturnAsset";  // Renamed for Manager
+import ManagerReturnAsset from "./dashboard/Manager/ManagerReturnAsset"; // Renamed for Manager
 import ViewAssignedAssets from "./dashboard/Manager/ViewAssignedAssets";
 import NotFound from "./pages/NotFound";
 import "./styles/global.css";
@@ -124,27 +123,160 @@ const App = () => {
               </Layout>
             }
           />
-          <Route path="/admin/all-assets" element={<Layout><AllAssets /></Layout>} />
-          <Route path="/admin/add-asset" element={<Layout><AddNewAsset /></Layout>} />
-          <Route path="/admin/categories" element={<Layout><AssetCategories /></Layout>} />
-          <Route path="/admin/history" element={<Layout><AssetHistory /></Layout>} />
-          <Route path="/admin/assign-asset" element={<Layout><AssignAsset /></Layout>} />
-          <Route path="/admin/return-asset" element={<Layout><AdminReturnAsset /></Layout>} />
-          <Route path="/admin/repair-status" element={<Layout><RepairStatus /></Layout>} />
-          <Route path="/admin/asset-requests" element={<Layout><AssetRequests /></Layout>} />
-          <Route path="/admin/asset-reports" element={<Layout><Reports /></Layout>} />
-          <Route path="/admin/all-users" element={<Layout><AllUsers /></Layout>} />
-          <Route path="/admin/add-user" element={<Layout><AddUser /></Layout>} />
+          <Route
+            path="/admin/all-assets"
+            element={
+              <Layout>
+                <AllAssets />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/add-asset"
+            element={
+              <Layout>
+                <AddNewAsset />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/categories"
+            element={
+              <Layout>
+                <AssetCategories />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/history"
+            element={
+              <Layout>
+                <AssetHistory />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/assign-asset"
+            element={
+              <Layout>
+                <AssignAsset />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/return-asset"
+            element={
+              <Layout>
+                <AdminReturnAsset />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/repair-status"
+            element={
+              <Layout>
+                <RepairStatus />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/asset-requests"
+            element={
+              <Layout>
+                <AssetRequests />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/asset-reports"
+            element={
+              <Layout>
+                <Reports />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/all-users"
+            element={
+              <Layout>
+                <AllUsers />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/add-user"
+            element={
+              <Layout>
+                <AddUser />
+              </Layout>
+            }
+          />
 
           {/* Employee Routes */}
-          <Route path="/employee/view-my-assets" element={<Layout><ViewMyAsset /></Layout>} />
-          <Route path="/employee/contact-support" element={<Layout><ContactAdmin /></Layout>} />
-          <Route path="/employee/guidelines" element={<Layout><Guidlines /></Layout>} />
-          <Route path="/employee/report-issue" element={<Layout><ReportAnIssue /></Layout>} />
-          <Route path="/employee/request-asset" element={<Layout><RequestNewAsset /></Layout>} />
-          <Route path="/employee/return-request" element={<Layout><ReturnRequest /></Layout>} />
-          <Route path="/employee/scan-qr" element={<Layout><ScanQRCode /></Layout>} />
-          <Route path="/employee/request-status" element={<Layout><ViewRequestStatus /></Layout>} />
+          <Route
+            path="/employee/view-my-assets"
+            element={
+              <Layout>
+                <ViewMyAsset />
+              </Layout>
+            }
+          />
+          <Route
+            path="/employee/contact-support"
+            element={
+              <Layout>
+                <ContactAdmin />
+              </Layout>
+            }
+          />
+          <Route
+            path="/employee/guidelines"
+            element={
+              <Layout>
+                <Guidlines />
+              </Layout>
+            }
+          />
+          <Route
+            path="/employee/report-issue"
+            element={
+              <Layout>
+                <ReportAnIssue />
+              </Layout>
+            }
+          />
+          <Route
+            path="/employee/request-asset"
+            element={
+              <Layout>
+                <RequestNewAsset />
+              </Layout>
+            }
+          />
+          <Route
+            path="/employee/return-request"
+            element={
+              <Layout>
+                <ReturnRequest />
+              </Layout>
+            }
+          />
+          <Route
+            path="/employee/scan-qr"
+            element={
+              <Layout>
+                <ScanQRCode />
+              </Layout>
+            }
+          />
+          <Route
+            path="/employee/request-status"
+            element={
+              <Layout>
+                <ViewRequestStatus />
+              </Layout>
+            }
+          />
 
           {/* Admin Maintenance Routes */}
           <Route
@@ -197,7 +329,14 @@ const App = () => {
               </Layout>
             }
           />
-          <Route path="/manager/return-assets" element={<Layout><ManagerReturnAsset /></Layout>} />
+          <Route
+            path="/manager/return-assets"
+            element={
+              <Layout>
+                <ManagerReturnAsset />
+              </Layout>
+            }
+          />
           <Route
             path="/manager/asset-condition-reports"
             element={
@@ -235,6 +374,15 @@ const App = () => {
             element={
               <Layout>
                 <ManageEmployeeRequests />
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/employee/*"
+            element={
+              <Layout>
+                <EmployeeDashboard />
               </Layout>
             }
           />
