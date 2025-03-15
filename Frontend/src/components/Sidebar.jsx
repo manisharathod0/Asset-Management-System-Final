@@ -1,12 +1,15 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, ChevronDown, Home, Settings, User, Package, QrCode, Wrench, BarChart2, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext"; // Import useAuth hook
 
-const Sidebar = ({isOpen, setIsOpen}) => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
   const [openMenu, setOpenMenu] = useState(null);
   const sidebarRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth(); // Access the logout function from AuthContext
   const role = location.pathname.split("/")[1];
 
   const toggleSubMenu = (label) => {
@@ -36,7 +39,8 @@ const Sidebar = ({isOpen, setIsOpen}) => {
   }, []);
 
   const onLogout = () => {
-    navigate("/");
+    logout(); // Call the logout function from AuthContext
+    navigate("/"); // Navigate to the home page
   };
 
   const menuItems = {

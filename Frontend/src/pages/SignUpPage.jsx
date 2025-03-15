@@ -1,44 +1,39 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // Import the useAuth hook
 
-const Login = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth(); // Access the login function from AuthContext
+const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSignUp = (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
-
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ email, role: data.role, token: data.token })
-        );
-        login({ email, role: data.role }); // Pass user data to login function
-        navigate(`/${data.role}/dashboard`);
-      } else {
-        setError(data.message);
-      }
-    } catch (error) {
-      setError("Server error. Please try again.");
+    
+    // Basic validation
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
     }
-
-    setLoading(false);
+    
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+    
+    setLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      if (email && password) {
+        console.log("User Registered:", { email, password });
+        navigate("/login"); // Redirect to login page after signup
+      }
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -47,15 +42,15 @@ const Login = () => {
         {/* Header Text */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#001F3F] to-[#3A6D8C] bg-clip-text text-transparent">
-            Welcome Back
+            Create Account
           </h1>
-          <p className="mt-2 text-gray-600">Sign in to continue to AssetEase</p>
+          <p className="mt-2 text-gray-600">Join AssetEase and streamline your asset management</p>
         </div>
 
         {/* Card */}
         <div className="bg-white p-8 rounded-xl shadow-xl border border-gray-100">
           <h2 className="text-2xl font-bold text-center mb-6 text-[#001F3F]">
-            Login
+            Sign Up
           </h2>
           
           {/* Error Message */}
@@ -71,7 +66,7 @@ const Login = () => {
           )}
           
           {/* Form */}
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSignUp}>
             <div className="mb-5">
               <label className="block text-[#3A6D8C] font-medium mb-2" htmlFor="email">
                 Email Address
@@ -95,15 +90,10 @@ const Login = () => {
               </div>
             </div>
             
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[#3A6D8C] font-medium" htmlFor="password">
-                  Password
-                </label>
-                <a href="#" className="text-sm text-[#6A9AB0] hover:text-[#3A6D8C] transition-colors duration-200">
-                  Forgot password?
-                </a>
-              </div>
+            <div className="mb-5">
+              <label className="block text-[#3A6D8C] font-medium mb-2" htmlFor="password">
+                Password
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -114,9 +104,32 @@ const Login = () => {
                   id="password"
                   type="password"
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A6D8C] focus:border-transparent transition-all duration-200"
-                  placeholder="Enter your password"
+                  placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Must be at least 6 characters long</p>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-[#3A6D8C] font-medium mb-2" htmlFor="confirmPassword">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A6D8C] focus:border-transparent transition-all duration-200"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
               </div>
@@ -127,7 +140,7 @@ const Login = () => {
               className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-300 ${
                 loading 
                   ? "bg-gray-400 cursor-not-allowed" 
-                  : "bg-gradient-to-r from-[#3A6D8C] to-[#6A9AB0] hover:shadow-lg transform hover:-translate-y-1"
+                  : "bg-gradient-to-r from-[#001F3F] to-[#3A6D8C] hover:shadow-lg transform hover:-translate-y-1"
               }`}
               disabled={loading}
             >
@@ -137,20 +150,20 @@ const Login = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Logging in...
+                  Creating Account...
                 </span>
               ) : (
-                "Sign In"
+                "Create Account"
               )}
             </button>
           </form>
           
-          {/* Sign Up Link */}
+          {/* Login Link */}
           <div className="text-center mt-6">
             <p className="text-gray-600">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-[#3A6D8C] font-medium hover:text-[#6A9AB0] transition-colors duration-200">
-                Sign Up
+              Already have an account?{" "}
+              <Link to="/login" className="text-[#3A6D8C] font-medium hover:text-[#6A9AB0] transition-colors duration-200">
+                Sign In
               </Link>
             </p>
           </div>
@@ -160,4 +173,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUpPage;

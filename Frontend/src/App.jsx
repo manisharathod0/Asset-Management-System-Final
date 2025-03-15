@@ -1,3 +1,4 @@
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -42,6 +43,9 @@ import Guidlines from "./dashboard/Employee/Guidlines";
 import ScanQRCode from "./dashboard/Employee/ScanQRCode";
 import ViewRequestStatus from "./dashboard/Employee/ViewRequestStatus";
 import ReturnRequest from "./dashboard/Employee/ReturnRequest";
+import SignUpPage from "./pages/SignUpPage";
+import WelcomePage from "./pages/WelcomePage";
+import { AuthProvider } from "./context/AuthContext";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -71,149 +75,175 @@ const Layout = ({ children }) => {
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div className="app-container">
-              <Navbar />
-              <div className="login-container">
-                <LoginPage />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Welcome Page */}
+          <Route
+            path="/"
+            element={
+              <div className="app-container">
+                <Navbar />
+                <WelcomePage />
               </div>
-            </div>
-          }
-        />
-        <Route
-          path="/admin/*"
-          element={
-            <Layout>
-              <AdminDashboard />
-            </Layout>
-          }
-        />
-        <Route path="/admin/all-assets" element={<Layout><AllAssets /></Layout>} />
-        <Route path="/admin/add-asset" element={<Layout><AddNewAsset /></Layout>} />
-        <Route path="/admin/categories" element={<Layout><AssetCategories /></Layout>} />
-        <Route path="/admin/history" element={<Layout><AssetHistory /></Layout>} />
-        <Route path="/admin/assign-asset" element={<Layout><AssignAsset /></Layout>} />
-        <Route path="/admin/return-asset" element={<Layout><AdminReturnAsset /></Layout>} />
-        <Route path="/admin/repair-status" element={<Layout><RepairStatus /></Layout>} />
-        <Route path="/admin/asset-requests" element={<Layout><AssetRequests /></Layout>} />
-        <Route path="/admin/asset-reports" element={<Layout><Reports /></Layout>} />
-        <Route path="/admin/all-users" element={<Layout><AllUsers /></Layout>} />
-        <Route path="/admin/add-user" element={<Layout><AddUser /></Layout>} /> 
-        <Route path="/employee/view-my-assets" element={<Layout><ViewMyAsset /></Layout>} />
-        <Route path="/employee/contact-support" element={<Layout><ContactAdmin /></Layout>} />
-        <Route path="/employee/guidelines" element={<Layout><Guidlines /></Layout>} />
-        <Route path="/employee/report-issue" element={<Layout><ReportAnIssue /></Layout>} />
-        <Route path="/employee/request-asset" element={<Layout><RequestNewAsset /></Layout>} />
-        <Route path="/employee/return-request" element={<Layout><ReturnRequest /></Layout>} />
-        <Route path="/employee/scan-qr" element={<Layout><ScanQRCode /></Layout>} />
-        <Route path="/employee/request-status" element={<Layout><ViewRequestStatus /></Layout>} />
-        <Route
-          path="/admin/scheduled-maintenance"
-          element={
-            <Layout>
-              <ScheduledMaintenance />
-            </Layout>
-          }
-/>
-        <Route
-          path="/admin/request-repair"
-          element={
-            <Layout>
-              <RequestRepair />
-            </Layout>
-          }
-        />
-        <Route
-          path="/manager/*"
-          element={
-            <Layout>
-              <ManagerDashboard />
-            </Layout>
-          }
-        />
-        <Route
-          path="/manager/request-new-asset"
-          element={
-            <Layout>
-              <RequestNewAsset />
-            </Layout>
-          }
-        />{" "}
-        {/* Fixed Route */}
-        <Route
-          path="/manager/pending-requests"
-          element={
-            <Layout>
-              <PendingRequests />
-            </Layout>
-          }
-        />{" "}
-        <Route
-          path="/manager/view-assigned-assets"
-          element={
-            <Layout>
-              <ViewAssignedAssets />
-            </Layout>
-          }
-        />{" "}
-        <Route path="/manager/return-assets" element={<Layout><ManagerReturnAsset /></Layout>} />{" "}
-        <Route
-          path="/manager/asset-condition-reports"
-          element={
-            <Layout>
-              <AssetConditionReports/>
-            </Layout>
-          }
-        />{" "}
-        <Route
-          path="/manager/qr-code-logs"
-          element={
-            <Layout>
-              <QRCodeLogs/>
-            </Layout>
-          }
-        />{" "}
-        <Route
-          path="/manager/report-issue"
-          element={
-            <Layout>
-              <ReportAnIssue/>
-            </Layout>
-          }
-        />{" "}
-        <Route
-          path="/manager/track-requests"
-          element={
-            <Layout>
-              <TrackRequests/>
-            </Layout>
-          }
-        />{" "}
-        <Route
-          path="/manager/manage-employee-requests"
-          element={
-            <Layout>
-              <ManageEmployeeRequests/>
-            </Layout>
-          }
-        />{" "}
-        
-        {/* Add this route */}
-        <Route
-          path="/employee/*"
-          element={
-            <Layout>
-              <EmployeeDashboard />
-            </Layout>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+            }
+          />
+
+          {/* Login Page */}
+          <Route
+            path="/login"
+            element={
+              <div className="app-container">
+                <Navbar />
+                <div className="auth-container">
+                  <LoginPage />
+                </div>
+              </div>
+            }
+          />
+
+          {/* Sign Up Page */}
+          <Route
+            path="/signup"
+            element={
+              <div className="app-container">
+                <Navbar />
+                <div className="auth-container">
+                  <SignUpPage />
+                </div>
+              </div>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin/*"
+            element={
+              <Layout>
+                <AdminDashboard />
+              </Layout>
+            }
+          />
+          <Route path="/admin/all-assets" element={<Layout><AllAssets /></Layout>} />
+          <Route path="/admin/add-asset" element={<Layout><AddNewAsset /></Layout>} />
+          <Route path="/admin/categories" element={<Layout><AssetCategories /></Layout>} />
+          <Route path="/admin/history" element={<Layout><AssetHistory /></Layout>} />
+          <Route path="/admin/assign-asset" element={<Layout><AssignAsset /></Layout>} />
+          <Route path="/admin/return-asset" element={<Layout><AdminReturnAsset /></Layout>} />
+          <Route path="/admin/repair-status" element={<Layout><RepairStatus /></Layout>} />
+          <Route path="/admin/asset-requests" element={<Layout><AssetRequests /></Layout>} />
+          <Route path="/admin/asset-reports" element={<Layout><Reports /></Layout>} />
+          <Route path="/admin/all-users" element={<Layout><AllUsers /></Layout>} />
+          <Route path="/admin/add-user" element={<Layout><AddUser /></Layout>} />
+
+          {/* Employee Routes */}
+          <Route path="/employee/view-my-assets" element={<Layout><ViewMyAsset /></Layout>} />
+          <Route path="/employee/contact-support" element={<Layout><ContactAdmin /></Layout>} />
+          <Route path="/employee/guidelines" element={<Layout><Guidlines /></Layout>} />
+          <Route path="/employee/report-issue" element={<Layout><ReportAnIssue /></Layout>} />
+          <Route path="/employee/request-asset" element={<Layout><RequestNewAsset /></Layout>} />
+          <Route path="/employee/return-request" element={<Layout><ReturnRequest /></Layout>} />
+          <Route path="/employee/scan-qr" element={<Layout><ScanQRCode /></Layout>} />
+          <Route path="/employee/request-status" element={<Layout><ViewRequestStatus /></Layout>} />
+
+          {/* Admin Maintenance Routes */}
+          <Route
+            path="/admin/scheduled-maintenance"
+            element={
+              <Layout>
+                <ScheduledMaintenance />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/request-repair"
+            element={
+              <Layout>
+                <RequestRepair />
+              </Layout>
+            }
+          />
+
+          {/* Manager Routes */}
+          <Route
+            path="/manager/*"
+            element={
+              <Layout>
+                <ManagerDashboard />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manager/request-new-asset"
+            element={
+              <Layout>
+                <RequestNewAsset />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manager/pending-requests"
+            element={
+              <Layout>
+                <PendingRequests />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manager/view-assigned-assets"
+            element={
+              <Layout>
+                <ViewAssignedAssets />
+              </Layout>
+            }
+          />
+          <Route path="/manager/return-assets" element={<Layout><ManagerReturnAsset /></Layout>} />
+          <Route
+            path="/manager/asset-condition-reports"
+            element={
+              <Layout>
+                <AssetConditionReports />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manager/qr-code-logs"
+            element={
+              <Layout>
+                <QRCodeLogs />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manager/report-issue"
+            element={
+              <Layout>
+                <ReportAnIssue />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manager/track-requests"
+            element={
+              <Layout>
+                <TrackRequests />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manager/manage-employee-requests"
+            element={
+              <Layout>
+                <ManageEmployeeRequests />
+              </Layout>
+            }
+          />
+
+          {/* 404 Not Found Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 
