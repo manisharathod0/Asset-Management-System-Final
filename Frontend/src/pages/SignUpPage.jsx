@@ -1,15 +1,20 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Import the useAuth hook
 
 const SignUpPage = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("employee"); // Default role is "employee"
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // Access the login function from AuthContext
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
     
@@ -25,15 +30,31 @@ const SignUpPage = () => {
     }
     
     setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      if (email && password) {
-        console.log("User Registered:", { email, password });
-        navigate("/login"); // Redirect to login page after signup
+  
+    try {
+      // Send signup request to the backend
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Show success message
+        alert("Account created successfully! Please login to continue.");
+        
+        // Redirect to login page
+        navigate("/login");
+      } else {
+        setError(data.message || "Signup failed. Please try again.");
       }
-      setLoading(false);
-    }, 1000);
+    } catch (error) {
+      setError("Server error. Please try again.");
+    }
+  
+    setLoading(false);
   };
 
   return (
@@ -67,6 +88,21 @@ const SignUpPage = () => {
           
           {/* Form */}
           <form onSubmit={handleSignUp}>
+            <div className="mb-5">
+              <label className="block text-[#3A6D8C] font-medium mb-2" htmlFor="name">
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A6D8C] focus:border-transparent transition-all duration-200"
+                placeholder="Enter your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
             <div className="mb-5">
               <label className="block text-[#3A6D8C] font-medium mb-2" htmlFor="email">
                 Email Address
@@ -133,6 +169,23 @@ const SignUpPage = () => {
                   required
                 />
               </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-[#3A6D8C] font-medium mb-2" htmlFor="role">
+                Role
+              </label>
+              <select
+                id="role"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A6D8C] focus:border-transparent transition-all duration-200"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+              >
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="employee">Employee</option>
+              </select>
             </div>
             
             <button
