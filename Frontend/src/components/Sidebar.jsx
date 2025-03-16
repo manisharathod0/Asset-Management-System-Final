@@ -68,7 +68,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         subItems: [
           { name: "Generate QR Code", path: "/admin/generate-qr" },
           { name: "Scan QR Code", path: "/admin/scan-qr" },
-          { name: "QR Code Logs", path: "/admin/qr-logs" }
+          { name: "QR Code Logs", path: "/admin/admin-qr-logs" }
         ]
       },
       {

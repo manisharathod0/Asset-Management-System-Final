@@ -45,6 +45,9 @@ import ReturnRequest from "./dashboard/Employee/ReturnRequest";
 import SignUpPage from "./pages/SignUpPage";
 import WelcomePage from "./pages/WelcomePage";
 import { AuthProvider } from "./context/AuthContext";
+import GenerateQR from "./dashboard/Admin/GenerateQR";
+import ScanQR from "./dashboard/Admin/ScanQR";
+import QRCodeLog from "./dashboard/Admin/QRCodeLog";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -176,6 +179,30 @@ const App = () => {
             element={
               <Layout>
                 <RepairStatus />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/generate-qr"
+            element={
+              <Layout>
+                <GenerateQR />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/scan-qr"
+            element={
+              <Layout>
+                <ScanQR />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/admin-qr-logs"
+            element={
+              <Layout>
+                <QRCodeLog />
               </Layout>
             }
           />
