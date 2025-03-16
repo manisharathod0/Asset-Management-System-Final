@@ -31,7 +31,6 @@ const GenerateQR = () => {
   `--------------------------------\n` +
   `🆔 ID: ${selectedAsset._id}\n` +
   `🏷 Name: ${selectedAsset.name}\n` +
-  `🔢 Serial No: ${selectedAsset.serialNumber || "N/A"}\n` +
   `📂 Category: ${selectedAsset.category}\n` +
   `👤 Assigned To: ${selectedAsset.assignedTo || "Not Assigned"}\n` +
   `⚙️ Condition: ${selectedAsset.condition || "Unknown"}\n` +
