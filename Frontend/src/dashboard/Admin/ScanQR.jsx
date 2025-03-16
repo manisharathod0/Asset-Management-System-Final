@@ -35,6 +35,12 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
     return text.replace(/([^\s])([\u{1F300}-\u{1FAD6}])/gu, "$1\n$2");
   };
 
+  // Reset state for scanning another QR code
+  const handleScanAnother = () => {
+    setScanResult(null);
+    setErrorMessage("");
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
@@ -62,6 +68,12 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
             <pre className="text-lg font-medium break-words whitespace-pre-wrap">
               {scanResult}
             </pre>
+            <button
+              onClick={handleScanAnother}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
+            >
+              Scan Another QR Code
+            </button>
           </div>
         )}
       </div>
