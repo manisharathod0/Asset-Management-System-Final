@@ -25,32 +25,25 @@ const GenerateQR = () => {
   // Generate QR Code
   const handleGenerateQR = () => {
     if (selectedAsset) {
-      // Format asset details into readable text
+      // Safely format asset details
       const assetDetails = 
-  `📌 Asset Details\n` +
-  `--------------------------------\n` +
-  `🆔 ID: ${selectedAsset._id}\n` +
-  `🏷 Name: ${selectedAsset.name}\n` +
-  `📂 Category: ${selectedAsset.category}\n` +
-  `👤 Assigned To: ${selectedAsset.assignedTo || "Not Assigned"}\n` +
-  `⚙️ Condition: ${selectedAsset.condition || "Unknown"}\n` +
-  `🚦 Status: ${selectedAsset.status}`;
-
-setQrValue(assetDetails);
-
-      
+        `📌 Asset Details\n` +
+        `--------------------------------\n` +
+        `🆔 ID: ${selectedAsset._id || "N/A"}\n` +
+        `🏷 Name: ${selectedAsset.name || "N/A"}\n` +
+        `📂 Category: ${selectedAsset.category || "N/A"}\n` +
+        `🔢 Serial No: ${selectedAsset.serialNumber || "N/A"}\n` +
+        `👤 Assigned To: ${selectedAsset.assignedTo || "Not Assigned"}\n` +
+        `⚙️ Condition: ${selectedAsset.condition || "Unknown"}\n` +
+        `🚦 Status: ${selectedAsset.status || "N/A"}`;
+  
       setQrValue(assetDetails);
     } else if (customInput.trim() !== "") {
-      // If using custom input, format it
-      const customData = `
-      📌 Custom Asset Entry
-      ---------------------
-      🔹 ${customInput}
-      `.trim();
-
+      const customData = `📌 Custom Asset Entry\n---------------------\n🔹 ${customInput}`;
       setQrValue(customData);
     }
   };
+  
 
   // Download QR Code
   const handleDownloadQR = () => {
