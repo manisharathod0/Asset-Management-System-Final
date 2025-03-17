@@ -1,4 +1,6 @@
+
 import { useState } from "react";
+import axios from "axios";
 
 const AddNewAsset = () => {
   const [asset, setAsset] = useState({
@@ -12,10 +14,15 @@ const AddNewAsset = () => {
     setAsset({ ...asset, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("New Asset Added:", asset);
-    // Add API call to save asset
+    try {
+      await axios.post("http://localhost:5000/api/assets", asset);
+      alert("Asset added successfully!");
+      setAsset({ name: "", category: "", status: "Available", description: "" });
+    } catch (error) {
+      console.error("Error adding asset:", error);
+    }
   };
 
   return (

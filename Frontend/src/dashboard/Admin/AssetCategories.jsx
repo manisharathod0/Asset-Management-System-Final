@@ -1,24 +1,46 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 
 const AssetCategories = () => {
-  const [categories, setCategories] = useState([
-    "Electronics",
-    "Furniture",
-    "Office Equipment",
-    "Vehicles",
-  ]);
+  const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
 
-  const handleAddCategory = () => {
-    if (newCategory.trim() !== "" && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory]);
-      setNewCategory("");
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/categories");
+      console.log("Fetched Categories:", response.data); // Debugging
+      setCategories(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setCategories([]); // Ensure it's always an array
     }
   };
 
-  const handleDeleteCategory = (category) => {
-    setCategories(categories.filter((cat) => cat !== category));
+  const handleAddCategory = async () => {
+    if (newCategory.trim() !== "" && !categories.some(cat => cat.name === newCategory)) {
+      try {
+        await axios.post("http://localhost:5000/api/categories", { name: newCategory });
+        fetchCategories(); // Refresh the list
+        setNewCategory("");
+      } catch (error) {
+        console.error("Error adding category:", error);
+      }
+    }
+  };
+
+  const handleDeleteCategory = async (id) => {
+    try {
+      await axios.delete(`/http://localhost:5000/api/categories/${id}`);
+      fetchCategories(); // Refresh the list
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
   };
 
   return (
@@ -40,17 +62,21 @@ const AssetCategories = () => {
         </button>
       </div>
       <ul className="list-none p-0">
-        {categories.map((category, index) => (
-          <li key={index} className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded-lg shadow">
-            <span className="text-gray-700 font-medium">{category}</span>
-            <button
-              onClick={() => handleDeleteCategory(category)}
-              className="text-red-500 hover:text-red-700 transition"
-            >
-              <FaTrash />
-            </button>
-          </li>
-        ))}
+        {categories?.length > 0 ? (
+          categories.map((category) => (
+            <li key={category._id} className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded-lg shadow">
+              <span className="text-gray-700 font-medium">{category.name}</span>
+              <button
+                onClick={() => handleDeleteCategory(category._id)}
+                className="text-red-500 hover:text-red-700 transition"
+              >
+                <FaTrash />
+              </button>
+            </li>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No categories available</p>
+        )}
       </ul>
     </div>
   );
