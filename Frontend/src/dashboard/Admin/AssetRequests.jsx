@@ -1,23 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaDownload } from "react-icons/fa";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
+import axios from "axios";
 
 const AssetRequests = () => {
-  const [requests, setRequests] = useState([
-    { id: 1, asset: "Dell Laptop", requestedBy: "John Doe", date: "2024-02-20", status: "Pending" },
-    { id: 2, asset: "Office Chair", requestedBy: "Jane Smith", date: "2024-02-18", status: "Pending" },
-    { id: 3, asset: "Projector", requestedBy: "Emily Davis", date: "2024-02-22", status: "Pending" },
-  ]);
-
+  const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [exportFormat, setExportFormat] = useState("csv");
 
-  const handleStatusChange = (id, newStatus) => {
-    setRequests(requests.map((req) => (req.id === id ? { ...req, status: newStatus } : req)));
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/requests");
+      setRequests(response.data);
+    } catch (error) {
+      console.error("Error fetching asset requests:", error);
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/requests/${id}`, { status: newStatus });
+      setRequests(requests.map((req) => (req._id === id ? { ...req, status: newStatus } : req)));
+    } catch (error) {
+      console.error("Error updating request status:", error);
+    }
   };
 
   const filteredRequests = requests.filter(
@@ -45,8 +59,7 @@ const AssetRequests = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } 
-    else if (exportFormat === "pdf") {
+    } else if (exportFormat === "pdf") {
       const doc = new jsPDF();
       doc.text("Asset Requests", 14, 10);
       autoTable(doc, {
@@ -54,21 +67,19 @@ const AssetRequests = () => {
         body: filteredRequests.map((row) => Object.values(row)),
       });
       doc.save("asset_requests.pdf");
-    } 
-    else if (exportFormat === "excel") {
+    } else if (exportFormat === "excel") {
       const ws = XLSX.utils.json_to_sheet(filteredRequests);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Asset Requests");
       XLSX.writeFile(wb, "asset_requests.xlsx");
-    } 
-    else {
+    } else {
       alert("Unsupported export format!");
     }
   };
 
   return (
     <motion.div
-      className="p-6 mt-16 bg-white shadow-lg rounded-xl"
+      className="p-6 mt-30 bg-white shadow-lg rounded-xl"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
     >
@@ -76,7 +87,6 @@ const AssetRequests = () => {
         Asset Requests
       </h2>
 
-      {/* Search & Filter Options */}
       <div className="flex gap-2 mb-4">
         <input
           type="text"
@@ -104,16 +114,12 @@ const AssetRequests = () => {
           <option value="pdf">PDF</option>
           <option value="excel">Excel</option>
         </select>
-        <button
-          className="bg-blue-500 text-white px-4 flex items-center gap-2 rounded-lg"
-          onClick={handleExport}
-        >
+        <button className="bg-blue-500 text-white px-4 flex items-center gap-2 rounded-lg" onClick={handleExport}>
           <FaDownload /> Export
         </button>
       </div>
 
-      {/* Table Component */}
-      <div className="overflow-x-auto mt-20">
+      <div className="overflow-x-auto mt-10">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-[#3A6D8C] text-white">
@@ -127,7 +133,7 @@ const AssetRequests = () => {
           <tbody>
             {filteredRequests.map((req) => (
               <motion.tr
-                key={req.id}
+                key={req._id}
                 className="text-center bg-gray-100 hover:bg-gray-200 transition"
                 initial={{ x: -10, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -135,31 +141,20 @@ const AssetRequests = () => {
                 <td className="p-3 border">{req.asset}</td>
                 <td className="p-3 border">{req.requestedBy}</td>
                 <td className="p-3 border">{req.date}</td>
-                <td
-                  className={`p-3 border font-semibold ${
-                    req.status === "Pending"
-                      ? "text-yellow-600"
-                      : req.status === "Approved"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
+                <td className={`p-3 border font-semibold ${
+                  req.status === "Pending" ? "text-yellow-600" :
+                  req.status === "Approved" ? "text-green-600" : "text-red-600"
+                }`}>
                   {req.status}
                 </td>
                 <td className="p-3 border flex justify-center gap-2">
                   {req.status !== "Approved" && (
-                    <button
-                      onClick={() => handleStatusChange(req.id, "Approved")}
-                      className="bg-green-500 text-white px-3 py-1 rounded-lg"
-                    >
+                    <button onClick={() => handleStatusChange(req._id, "Approved")} className="bg-green-500 text-white px-3 py-1 rounded-lg">
                       Approve
                     </button>
                   )}
                   {req.status !== "Rejected" && (
-                    <button
-                      onClick={() => handleStatusChange(req.id, "Rejected")}
-                      className="bg-red-500 text-white px-3 py-1 rounded-lg"
-                    >
+                    <button onClick={() => handleStatusChange(req._id, "Rejected")} className="bg-red-500 text-white px-3 py-1 rounded-lg">
                       Reject
                     </button>
                   )}
