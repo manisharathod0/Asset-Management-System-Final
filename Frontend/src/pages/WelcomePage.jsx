@@ -14,11 +14,6 @@ const WelcomePage = () => {
             Streamline your asset management with our modern, intuitive platform designed for today's businesses
           </p>
           <div className="flex justify-center mt-8 space-x-4">
-            <Link to="/signup">
-              <button className="px-8 py-3 rounded-lg font-semibold bg-gradient-to-r from-[#3A6D8C] to-[#6A9AB0] text-white hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-                Get Started
-              </button>
-            </Link>
             <Link to="/login">
               <button className="px-8 py-3 rounded-lg font-semibold border-2 border-[#3A6D8C] text-[#3A6D8C] hover:bg-[#3A6D8C] hover:text-white hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                 Sign In
@@ -103,11 +98,6 @@ const WelcomePage = () => {
             <p className="text-xl mb-6">
               Join thousands of businesses that have simplified their asset tracking and management with AssetEase.
             </p>
-            <Link to="/signup">
-              <button className="px-8 py-3 rounded-lg font-semibold bg-white text-[#3A6D8C] hover:bg-[#EAD8B1] hover:text-[#001F3F] hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-                Get Started Now
-              </button>
-            </Link>
           </div>
         </div>
       </div>

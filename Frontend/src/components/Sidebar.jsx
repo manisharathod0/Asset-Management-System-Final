@@ -51,7 +51,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         subItems: [
           { name: "All Assets", path: "/admin/all-assets" },
           { name: "Add New Asset", path: "/admin/add-asset" },
-          { name: "Asset Categories", path: "/admin/categories" },
           { name: "Asset History", path: "/admin/history" }
         ]
       },
