@@ -5,19 +5,38 @@ import { motion } from "framer-motion";
 const AddUser = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState("Employee");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !email) {
+    if (!name || !email || !password) {
       alert("Please fill all fields");
       return;
     }
-    alert(`User Added: ${name}, ${email}, ${role}`);
-    setName("");
-    setEmail("");
-    setRole("Employee");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+
+      if (response.ok) {
+        alert("User Added Successfully");
+        setName("");
+        setEmail("");
+        setPassword("");
+        setRole("Employee");
+      } else {
+        alert("Failed to add user");
+      }
+    } catch (error) {
+      alert("Error connecting to server");
+    }
   };
+
+  
 
   return (
     <motion.div 
@@ -40,6 +59,13 @@ const AddUser = () => {
           placeholder="Email Address" 
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
+          className="w-full p-3 border rounded-lg focus:outline-none" 
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
           className="w-full p-3 border rounded-lg focus:outline-none" 
         />
         <select 
