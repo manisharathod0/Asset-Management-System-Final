@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -9,24 +10,42 @@ const statusColors = {
 };
 
 const AllAssets = () => {
-  const [assets, setAssets] = useState([
-    { id: 1, name: "Dell Laptop", category: "Electronics", status: "Assigned" },
-    { id: 2, name: "HP Printer", category: "Office Equipment", status: "Available" },
-    { id: 3, name: "Office Desk", category: "Furniture", status: "Under Maintenance" },
-    { id: 4, name: "Projector", category: "Electronics", status: "Available" },
-  ]);
-
+  const [assets, setAssets] = useState([]);
   const [editingAsset, setEditingAsset] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetchAssets();
+  }, []);
+
+  const fetchAssets = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/assets");
+      console.log("API Response:", response.data); // Log the response
+      if (Array.isArray(response.data)) {
+        setAssets(response.data);
+      } else {
+        console.error("Expected an array but got:", response.data);
+        setAssets([]); // Fallback to an empty array
+      }
+    } catch (error) {
+      console.error("Error fetching assets:", error);
+    }
+  };
 
   const handleEdit = (asset) => {
     setEditingAsset(asset);
     setModalOpen(true);
   };
 
-  const handleSave = () => {
-    setAssets(assets.map(a => a.id === editingAsset.id ? editingAsset : a));
-    setModalOpen(false);
+  const handleSave = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/assets/${editingAsset._id}`, editingAsset);
+      fetchAssets(); // Refresh the list
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Error updating asset:", error);
+    }
   };
 
   return (
@@ -42,43 +61,53 @@ const AllAssets = () => {
           </tr>
         </thead>
         <tbody>
-          {assets.map((asset) => (
-            <tr key={asset.id} className="text-center">
-              <td className="p-3 border">{asset.name}</td>
-              <td className="p-3 border">{asset.category}</td>
-              <td className={`p-3 border font-semibold ${statusColors[asset.status]}`}>{asset.status}</td>
-              <td className="p-3 border">
-                <button 
-                  className="bg-blue-500 text-white px-3 py-1 rounded"
-                  onClick={() => handleEdit(asset)}
-                >
-                  Edit
-                </button>
+          {assets.length > 0 ? (
+            assets.map((asset) => (
+              <tr key={asset._id} className="text-center">
+                <td className="p-3 border">{asset.name}</td>
+                <td className="p-3 border">{asset.category}</td>
+                <td className={`p-3 border font-semibold ${statusColors[asset.status]}`}>
+                  {asset.status}
+                </td>
+                <td className="p-3 border">
+                  <button
+                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                    onClick={() => handleEdit(asset)}
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="p-3 text-center text-gray-500">
+                No assets found.
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Edit Asset</h2>
-            <input 
-              type="text" 
-              className="border p-2 w-full mb-2" 
-              value={editingAsset.name} 
-              onChange={(e) => setEditingAsset({ ...editingAsset, name: e.target.value })} 
+            <input
+              type="text"
+              className="border p-2 w-full mb-2"
+              value={editingAsset.name}
+              onChange={(e) => setEditingAsset({ ...editingAsset, name: e.target.value })}
             />
-            <input 
-              type="text" 
-              className="border p-2 w-full mb-2" 
-              value={editingAsset.category} 
-              onChange={(e) => setEditingAsset({ ...editingAsset, category: e.target.value })} 
+            <input
+              type="text"
+              className="border p-2 w-full mb-2"
+              value={editingAsset.category}
+              onChange={(e) => setEditingAsset({ ...editingAsset, category: e.target.value })}
             />
-            <select 
-              className="border p-2 w-full mb-4" 
-              value={editingAsset.status} 
-              onChange={(e) => setEditingAsset({ ...editingAsset, status: e.target.value })} 
+            <select
+              className="border p-2 w-full mb-4"
+              value={editingAsset.status}
+              onChange={(e) => setEditingAsset({ ...editingAsset, status: e.target.value })}
             >
               <option value="Available">Available</option>
               <option value="Assigned">Assigned</option>
@@ -86,14 +115,14 @@ const AllAssets = () => {
               <option value="Retired">Retired</option>
             </select>
             <div className="flex justify-end">
-              <button 
-                className="bg-green-500 text-white px-4 py-2 rounded mr-2" 
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded mr-2"
                 onClick={handleSave}
               >
                 Save
               </button>
-              <button 
-                className="bg-red-500 text-white px-4 py-2 rounded" 
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
                 onClick={() => setModalOpen(false)}
               >
                 Cancel

@@ -162,16 +162,6 @@ const LoginPage = () => {
               )}
             </button>
           </form>
-          
-          {/* Register Link */}
-          <div className="text-center mt-6">
-            <p className="text-gray-600">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-[#3A6D8C] font-medium hover:text-[#6A9AB0] transition-colors duration-200">
-                Create Account
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>
