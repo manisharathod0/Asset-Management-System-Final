@@ -73,9 +73,9 @@ const AddUser = () => {
           onChange={(e) => setRole(e.target.value)} 
           className="w-full p-3 border rounded-lg focus:outline-none"
         >
-          <option value="Admin">Admin</option>
-          <option value="Manager">Manager</option>
-          <option value="Employee">Employee</option>
+          <option value="Admin">admin</option>
+          <option value="Manager">manager</option>
+          <option value="Employee">employee</option>
         </select>
         <button 
           type="submit" 

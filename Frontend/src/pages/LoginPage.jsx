@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -11,32 +10,27 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  const handleLogin = async (event) => {
+    event.preventDefault();
     setLoading(true);
-
+    setError("");
+  
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-
+      console.log("Login Response:", data); // 🔍 Debugging
+  
+      setLoading(false);
+  
       if (response.ok) {
-        // Save user data to localStorage
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ email, role: data.role, token: data.token })
-        );
-
-        // Update auth context
-        login({ email, role: data.role });
-
-        // Redirect to the respective dashboard based on the user's role
-        switch (data.role) {
+        login(data.token, data.role);
+  
+        switch (data.role.toLowerCase()) { // Convert role to lowercase for matching
           case "admin":
             navigate("/admin/dashboard");
             break;
@@ -47,18 +41,18 @@ const LoginPage = () => {
             navigate("/employee/dashboard");
             break;
           default:
-            navigate("/");
+            setError(`Invalid role (${data.role}), please contact admin.`);
         }
       } else {
-        setError(data.message || "Login failed. Please try again.");
+        setError(data.message || "Login failed");
       }
     } catch (error) {
-      setError("Server error. Please try again.");
+      setLoading(false);
+      console.error("Error logging in:", error);
+      setError("Something went wrong. Please try again.");
     }
-
-    setLoading(false);
   };
-
+  
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#EAD8B1] to-[#F5E9D0] px-4 py-25">
       <div className="w-full max-w-md">
