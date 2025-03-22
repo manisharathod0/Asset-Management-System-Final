@@ -70,7 +70,7 @@ const AllAssets = () => {
       formData.append("status", editingAsset.status);
       formData.append("description", editingAsset.description || "");
       formData.append("expiryDate", editingAsset.expiryDate || "");
-      formData.append("quantity", editingAsset.quantity || 1);
+      formData.append("quantity", editingAsset.quantity.toString()); // Ensure quantity is a string
       
       if (editingAsset.newImage) {
         formData.append("image", editingAsset.newImage);

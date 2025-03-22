@@ -1,88 +1,5 @@
 
-// import { useState } from "react";
-// import axios from "axios";
 
-// const AddNewAsset = () => {
-//   const [asset, setAsset] = useState({
-//     name: "",
-//     category: "",
-//     status: "Available",
-//     description: ""
-//   });
-
-//   const handleChange = (e) => {
-//     setAsset({ ...asset, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       await axios.post("http://localhost:5000/api/assets", asset);
-//       alert("Asset added successfully!");
-//       setAsset({ name: "", category: "", status: "Available", description: "" });
-//     } catch (error) {
-//       console.error("Error adding asset:", error);
-//     }
-//   };
-
-//   return (
-//     <div className="p-6 bg-white shadow-lg rounded-xl mt-16">
-//       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add New Asset</h2>
-//       <form onSubmit={handleSubmit}>
-//         <div className="mb-4">
-//           <label className="block text-gray-700">Asset Name</label>
-//           <input 
-//             type="text" 
-//             name="name" 
-//             value={asset.name} 
-//             onChange={handleChange} 
-//             className="border p-2 w-full" 
-//             required 
-//           />
-//         </div>
-//         <div className="mb-4">
-//           <label className="block text-gray-700">Category</label>
-//           <input 
-//             type="text" 
-//             name="category" 
-//             value={asset.category} 
-//             onChange={handleChange} 
-//             className="border p-2 w-full" 
-//             required 
-//           />
-//         </div>
-//         <div className="mb-4">
-//           <label className="block text-gray-700">Status</label>
-//           <select 
-//             name="status" 
-//             value={asset.status} 
-//             onChange={handleChange} 
-//             className="border p-2 w-full"
-//           >
-//             <option value="Available">Available</option>
-//             <option value="Assigned">Assigned</option>
-//             <option value="Under Maintenance">Under Maintenance</option>
-//             <option value="Retired">Retired</option>
-//           </select>
-//         </div>
-//         <div className="mb-4">
-//           <label className="block text-gray-700">Description</label>
-//           <textarea 
-//             name="description" 
-//             value={asset.description} 
-//             onChange={handleChange} 
-//             className="border p-2 w-full" 
-//           ></textarea>
-//         </div>
-//         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-//           Add Asset
-//         </button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default AddNewAsset;
 
 import { useState } from "react";
 import axios from "axios";
@@ -126,20 +43,19 @@ const AddNewAsset = () => {
     setIsSubmitting(true);
     
     try {
-      // Create a FormData object to handle file upload
       const formData = new FormData();
       formData.append("name", asset.name);
       formData.append("category", asset.category);
       formData.append("status", asset.status);
       formData.append("description", asset.description);
       formData.append("expiryDate", asset.expiryDate);
-      formData.append("quantity", asset.quantity);
+      formData.append("quantity", asset.quantity.toString()); // Ensure quantity is a string
       
       if (asset.image) {
         formData.append("image", asset.image);
       }
       
-      await axios.post("http://localhost:5000/api/assets", formData, {
+      const response = await axios.post("http://localhost:5000/api/assets", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -159,13 +75,16 @@ const AddNewAsset = () => {
       });
       setImagePreview(null);
     } catch (error) {
-      console.error("Error adding asset:", error);
-      alert("Failed to add asset. Please try again.");
+      if (error.response && error.response.status === 409) {
+        alert("An asset with this name already exists. Please use a different name.");
+      } else {
+        console.error("Error adding asset:", error);
+        alert("Failed to add asset. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className="p-6 bg-white shadow-lg rounded-xl mt-20">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add New Asset</h2>
@@ -283,3 +202,6 @@ const AddNewAsset = () => {
 };
 
 export default AddNewAsset;
+
+
+
