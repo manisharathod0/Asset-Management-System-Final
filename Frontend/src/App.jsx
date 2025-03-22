@@ -10,7 +10,6 @@ import Sidebar from "./components/Sidebar";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
-import ManagerDashboard from "./pages/ManagerDashboard";
 import NotFound from "./pages/NotFound";
 import WelcomePage from "./pages/WelcomePage";
 import { AuthProvider } from "./context/AuthContext";
@@ -33,17 +32,6 @@ import GenerateQR from "./dashboard/Admin/GenerateQR";
 import ScanQR from "./dashboard/Admin/ScanQR";
 import QRCodeLog from "./dashboard/Admin/QRCodeLog";
 
-// Import Manager components
-import RequestNewAsset from "./dashboard/Manager/RequestNewAsset";
-import PendingRequests from "./dashboard/Manager/PendingRequests";
-import ManagerReturnAsset from "./dashboard/Manager/ManagerReturnAsset";
-import ViewAssignedAssets from "./dashboard/Manager/ViewAssignedAssets";
-import AssetConditionReports from "./dashboard/Manager/AssetConditionReports";
-import ReportAnIssue from "./dashboard/Manager/ReportanIssue";
-import TrackRequests from "./dashboard/Manager/TrackRequests";
-import ManageEmployeeRequests from "./dashboard/Manager/ManageEmployeeRequests";
-import QRCodeLogs from "./dashboard/Manager/QRCodeLogs";
-
 // Import Employee components
 import ViewMyAsset from "./dashboard/Employee/ViewMyAsset";
 import ContactAdmin from "./dashboard/Employee/ContactAdmin";
@@ -51,6 +39,8 @@ import Guidlines from "./dashboard/Employee/Guidlines";
 import ScanQRCode from "./dashboard/Employee/ScanQRCode";
 import ViewRequestStatus from "./dashboard/Employee/ViewRequestStatus";
 import ReturnRequest from "./dashboard/Employee/ReturnRequest";
+import ReportAnIssue from "./dashboard/Employee/ReportAnIssue";
+import RequestNewAsset from "./dashboard/Employee/RequestNewAsset";
 
 import "./styles/global.css";
 import "./App.css";
@@ -59,7 +49,6 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const showSidebar =
     location.pathname.startsWith("/admin") ||
-    location.pathname.startsWith("/manager") ||
     location.pathname.startsWith("/employee");
 
   const [isOpen, setIsOpen] = useState(false);
@@ -167,6 +156,14 @@ const App = () => {
               }
             />
             <Route
+              path="/admin/asset-requests"
+              element={
+                <Layout>
+                  <AssetRequests />
+                </Layout>
+              }
+            />
+            <Route
               path="/admin/generate-qr"
               element={
                 <Layout>
@@ -191,6 +188,31 @@ const App = () => {
               }
             />
             <Route
+              path="/admin/scheduled-maintenance"
+              element={
+                <Layout>
+                  <ScheduledMaintenance />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/request-repair"
+              element={
+                <Layout>
+                  <RequestRepair />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/asset-reports"
+              element={
+                <Layout>
+                  <Reports />
+                </Layout>
+              }
+            />
+
+            <Route
               path="/admin/all-users"
               element={
                 <Layout>
@@ -203,50 +225,6 @@ const App = () => {
               element={
                 <Layout>
                   <AddUser />
-                </Layout>
-              }
-            />
-          </Route>
-
-          {/* Protected Manager Routes */}
-          <Route element={<ProtectedRoute allowedRoles={["manager"]} />}>
-            <Route
-              path="/manager/*"
-              element={
-                <Layout>
-                  <ManagerDashboard />
-                </Layout>
-              }
-            />
-            <Route
-              path="/manager/request-new-asset"
-              element={
-                <Layout>
-                  <RequestNewAsset />
-                </Layout>
-              }
-            />
-            <Route
-              path="/manager/pending-requests"
-              element={
-                <Layout>
-                  <PendingRequests />
-                </Layout>
-              }
-            />
-            <Route
-              path="/manager/view-assigned-assets"
-              element={
-                <Layout>
-                  <ViewAssignedAssets />
-                </Layout>
-              }
-            />
-            <Route
-              path="/manager/return-assets"
-              element={
-                <Layout>
-                  <ManagerReturnAsset />
                 </Layout>
               }
             />
@@ -267,6 +245,22 @@ const App = () => {
               element={
                 <Layout>
                   <ViewMyAsset />
+                </Layout>
+              }
+            />
+            <Route
+              path="/employee/scan-qr"
+              element={
+                <Layout>
+                  <ScanQRCode />
+                </Layout>
+              }
+            />
+            <Route
+              path="/employee/return-request"
+              element={
+                <Layout>
+                  <ReturnRequest />
                 </Layout>
               }
             />
@@ -299,6 +293,14 @@ const App = () => {
               element={
                 <Layout>
                   <ViewRequestStatus />
+                </Layout>
+              }
+            />
+            <Route
+              path="/employee/request-asset"
+              element={
+                <Layout>
+                  <RequestNewAsset />
                 </Layout>
               }
             />

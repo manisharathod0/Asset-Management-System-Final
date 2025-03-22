@@ -89,44 +89,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         ]
       }
     ],
-    manager: [
-      { icon: Home, label: "Dashboard", path: "/manager/dashboard" },
-      {
-        icon: Package, label: "Asset Requests",
-        subItems: [
-          { name: "Request New Asset", path: "/manager/request-new-asset" },
-          { name: "Pending Requests", path: "/manager/pending-requests" }
-        ]
-      },
-      {
-        icon: User, label: "Assigned Assets",
-        subItems: [
-          { name: "View Assigned Assets", path: "/manager/view-assigned-assets" },
-          { name: "Return Asset", path: "/manager/return-assets" },
-          { name: "Asset Condition Reports", path: "/manager/asset-condition-reports" }
-        ]
-      },
-      {
-        icon: QrCode, label: "QR Code Management",
-        subItems: [
-          { name: "Scan QR Code", path: "/manager/scan-qr-code" },
-          { name: "QR Code Logs", path: "/manager/qr-code-logs" }
-        ]
-      },
-      {
-        icon: Wrench, label: "Maintenance Requests",
-        subItems: [
-          { name: "Report an Issue", path: "/manager/report-issue" },
-          { name: "Track Requests", path: "/manager/track-requests" }
-        ]
-      },
-      {
-        icon: User, label: "Employees & Requests",
-        subItems: [
-          { name: "Manage Employee Requests", path: "/manager/manage-employee-requests" }
-        ]
-      },
-    ],
+    
     employee: [
       { icon: Home, label: "Dashboard", path: "/employee/dashboard" },
       {
