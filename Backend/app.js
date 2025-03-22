@@ -19,6 +19,9 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 // Middleware
 app.use(express.json());
 
+// Serve static files
+app.use("/uploads", express.static("uploads"));
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
