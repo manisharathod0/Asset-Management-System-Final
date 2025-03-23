@@ -181,7 +181,7 @@ const AllAssets = () => {
                 <tr key={asset._id} className="text-center hover:bg-gray-50">
                   <td className="p-3 border">
                     {asset.image ? (
-                      <div className="w-16 h-16 mx-auto">
+                      <div className="w-17 h-16 mx-auto">
                         <img 
                           src={`http://localhost:5000/uploads/${asset.image}`} 
                           alt={asset.name}
@@ -189,7 +189,7 @@ const AllAssets = () => {
                         />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 bg-gray-200 flex items-center justify-center mx-auto">
+                      <div className="w-20 h-20 bg-gray-200 flex items-center justify-center mx-auto">
                         <span className="text-xs text-gray-500">No image</span>
                       </div>
                     )}
