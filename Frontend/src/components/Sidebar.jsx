@@ -97,8 +97,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         ]
       },
       {
-        icon: QrCode, label: "QR Code Scanner",
-        subItems: [{ name: "Scan QR Code", path: "/employee/scan-qr" }]
+        icon: QrCode, label: "QR Code Scanner",path: "/employee/scan-qr"
       },
       {
         icon: Package, label: "Request Asset",
