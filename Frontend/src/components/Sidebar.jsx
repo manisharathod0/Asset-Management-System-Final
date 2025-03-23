@@ -65,7 +65,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       {
         icon: QrCode, label: "QR Code Management",
         subItems: [
-          { name: "Generate QR Code", path: "/admin/generate-qr" },
           { name: "Scan QR Code", path: "/admin/scan-qr" },
           { name: "QR Code Logs", path: "/admin/admin-qr-logs" }
         ]
@@ -77,9 +76,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           { name: "Request Repair", path: "/admin/request-repair" },
           { name: "Repair Status", path: "/admin/repair-status" }
         ]
-      },
-      {
-        icon: BarChart2, label: "Reports & Analytics", path: "/admin/asset-reports"
       },
       {
         icon: User, label: "Users & Roles",

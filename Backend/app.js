@@ -8,6 +8,8 @@ const authRoutes = require("./routes/authRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const historyRoutes = require("./routes/historyRoutes");
+const scanRoutes = require("./routes/scanRoutes"); // Import scan routes
+
 const path = require("path");
 const fs = require("fs");
 
@@ -54,6 +56,7 @@ const startServer = async () => {
     app.use("/api/assets", assetRoutes);
     app.use("/api/categories", categoryRoutes);
     app.use("/api/history", historyRoutes);
+    app.use("/api", scanRoutes);
     
     // Express multer error handling middleware
     app.use((err, req, res, next) => {
