@@ -79,9 +79,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         ]
       },
       {
-        icon: BarChart2, label: "Reports & Analytics", path: "/admin/asset-reports"
-      },
-      {
         icon: User, label: "Users & Roles",
         subItems: [
           { name: "All Users", path: "/admin/all-users" },

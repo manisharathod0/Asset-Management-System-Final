@@ -11,7 +11,6 @@ import AssetRequests from "./dashboard/Admin/AssetRequests";
 import ScheduledMaintenance from "./dashboard/Admin/ScheduleMaintenance";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import NotFound from "./pages/NotFound";
-import Reports from "./dashboard/Admin/Reports";
 import ViewMyAsset from "./dashboard/Employee/ViewMyAsset";
 import ReturnRequest from "./dashboard/Employee/ReturnRequest";
 import ReportAnIssue from "./dashboard/Employee/ReportAnIssue";
@@ -81,14 +80,6 @@ const AppRoutes = () => {
           element={
             <Layout>
               <AssetRequests />
-            </Layout>
-          }
-        />
-        <Route
-          path="/admin/asset-reports"
-          element={
-            <Layout>
-              <Reports/>
             </Layout>
           }
         />
