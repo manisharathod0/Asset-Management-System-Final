@@ -4,14 +4,49 @@ import { motion } from "framer-motion";
 const AssignAsset = () => {
   const [asset, setAsset] = useState("");
   const [user, setUser] = useState("");
-  const [date, setDate] = useState("");
+  const [assignedDate, setAssignedDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [note, setNote] = useState("");
+  const [assets, setAssets] = useState([]);
+  const [users, setUsers] = useState([]);
   const [assignedAssets, setAssignedAssets] = useState([]);
+
+  // Fetch Assets and Users
+  const fetchAssetsAndUsers = async () => {
+    try {
+      const assetResponse = await fetch("http://localhost:5000/api/assets");
+      const userResponse = await fetch("http://localhost:5000/api/users");
+      const assignedResponse = await fetch("http://localhost:5000/api/assets/assigned");
+  
+      if (!assetResponse.ok || !userResponse.ok || !assignedResponse.ok) {
+        throw new Error("Failed to fetch data");
+      }
+  
+      const assetData = await assetResponse.json();
+      const userData = await userResponse.json();
+      const assignedData = await assignedResponse.json();
+  
+      console.log("Assets:", assetData);
+      console.log("Users:", userData);
+      console.log("Assigned Assets:", assignedData);
+  
+      // Filter only available assets
+      const availableAssets = assetData.filter((item) => item.status === "Available");
+  
+      setAssets(availableAssets);
+      setUsers(userData);
+      setAssignedAssets(assignedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newAssignment = { asset, user, date, note };
+
+    const newAssignment = { assetId: asset, userId: user, assignedDate, dueDate, note };
 
     try {
       const response = await fetch("http://localhost:5000/api/assets/assign", {
@@ -22,40 +57,20 @@ const AssignAsset = () => {
 
       if (!response.ok) throw new Error("Failed to assign asset");
 
-      const data = await response.json();
       alert("Asset Assigned Successfully!");
+      fetchAssetsAndUsers();
 
       // Clear form fields
       setAsset("");
       setUser("");
-      setDate("");
+      setAssignedDate("");
+      setDueDate("");
       setNote("");
-
-      // Refresh assigned assets
-      fetchAssignedAssets();
     } catch (error) {
       console.error("Error:", error);
       alert("Error assigning asset");
     }
   };
-
-  // Fetch assigned assets from backend
-  const fetchAssignedAssets = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/assets/assigned");
-      if (!response.ok) throw new Error("Failed to fetch assigned assets");
-
-      const data = await response.json();
-      setAssignedAssets(data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  // Load assigned assets on component mount
-  useEffect(() => {
-    fetchAssignedAssets();
-  }, []);
 
   return (
     <motion.div 
@@ -73,31 +88,45 @@ const AssignAsset = () => {
             className="w-full p-3 border rounded-lg"
             required
           >
-            <option value="">-- Choose an Asset --</option>
-            <option value="Laptop">Laptop</option>
-            <option value="Projector">Projector</option>
-            <option value="Office Chair">Office Chair</option>
+            <option value="">-- Choose an Available Asset --</option>
+            {assets.map((item) => (
+              <option key={item._id} value={item._id}>{item.name} ({item.status})</option>
+            ))}
           </select>
         </div>
 
         <div>
           <label className="block font-medium">Assign To</label>
-          <input
-            type="text"
+          <select
             value={user}
             onChange={(e) => setUser(e.target.value)}
-            placeholder="Enter employee name"
             className="w-full p-3 border rounded-lg"
             required
-          />
+          >
+            <option value="">-- Choose a User --</option>
+            {users.map((u) => (
+              <option key={u._id} value={u._id}>{u.name}</option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label className="block font-medium">Assignment Date</label>
           <input
             type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+            value={assignedDate}
+            onChange={(e) => setAssignedDate(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium">Due Date</label>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
             className="w-full p-3 border rounded-lg"
             required
           />
@@ -118,7 +147,6 @@ const AssignAsset = () => {
         </button>
       </form>
 
-      {/* Display Assigned Assets with Scroll Feature */}
       <div className="mt-6">
         <h3 className="text-2xl font-semibold mb-2">Assigned Assets</h3>
         {assignedAssets.length > 0 ? (
@@ -126,7 +154,7 @@ const AssignAsset = () => {
             <ul>
               {assignedAssets.map((assignment, index) => (
                 <li key={index} className="border-b p-2 last:border-none">
-                  <strong>{assignment.asset}</strong> assigned to <strong>{assignment.user}</strong> on {new Date(assignment.date).toLocaleDateString()}
+                  <strong>{assignment.asset?.name}</strong> assigned to <strong>{assignment.user?.name}</strong> on {new Date(assignment.assignedDate).toLocaleDateString()} - Due: {new Date(assignment.dueDate).toLocaleDateString()}
                 </li>
               ))}
             </ul>

@@ -3,12 +3,30 @@
 const express = require("express");
 const router = express.Router();
 const Asset = require("../models/Asset");
-const { assignAsset, getAssignedAssets } = require("../controllers/assetController"); // don't delete
 const History = require("../models/History");
 const Category = require("../models/Category");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+import { getAssignedAssets } from "../controllers/assetController.js";
+
+const router = express.Router();
+
+router.get("/assigned", getAssignedAssets);
+
+const Assignment = require("../models/Assignment");
+
+// Get all assigned assets with user and asset details
+router.get("/assigned", async (req, res) => {
+  try {
+    const assignments = await Assignment.find()
+      .populate("asset", "name")
+      .populate("user", "name");
+    res.json(assignments);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Enhanced error logging middleware
 router.use((req, res, next) => {
