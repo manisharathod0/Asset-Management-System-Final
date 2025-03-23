@@ -1,3 +1,5 @@
+
+
 const express = require("express");
 const router = express.Router();
 const History = require("../models/History");
@@ -13,11 +15,18 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ➤ Add a new history entry
+// ➤ Add a new history entry with extended properties
 router.post("/", async (req, res) => {
   try {
-    const { asset, action, user } = req.body;
-    const history = new History({ asset, action, user });
+    const { asset, action, user, quantityChange, imageChange, expiryDateChange } = req.body;
+    const history = new History({ 
+      asset, 
+      action, 
+      user,
+      quantityChange,
+      imageChange,
+      expiryDateChange
+    });
     await history.save();
     res.status(201).json(history);
   } catch (error) {
