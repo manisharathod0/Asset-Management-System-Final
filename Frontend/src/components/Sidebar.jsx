@@ -65,7 +65,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       {
         icon: QrCode, label: "QR Code Management",
         subItems: [
-          { name: "Generate QR Code", path: "/admin/generate-qr" },
           { name: "Scan QR Code", path: "/admin/scan-qr" },
           { name: "QR Code Logs", path: "/admin/admin-qr-logs" }
         ]
