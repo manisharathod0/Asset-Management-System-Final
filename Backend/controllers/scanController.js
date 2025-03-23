@@ -63,8 +63,6 @@ exports.getScannedLogs = async (req, res) => {
         })
         .sort({ createdAt: -1 });
   
-      console.log("Sending logs:", logs); // Debugging
-  
       res.status(200).json(logs);
     } catch (error) {
       console.error("Error fetching scan logs:", error);
