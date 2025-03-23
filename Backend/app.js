@@ -8,7 +8,8 @@ const authRoutes = require("./routes/authRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const historyRoutes = require("./routes/historyRoutes");
-const scanRoutes = require("./routes/scanRoutes"); // Import scan routes
+const scanRoutes = require("./routes/scanRoutes"); 
+const assignmentRoutes =require("./routes/assignmentRoutes.js");
 
 const path = require("path");
 const fs = require("fs");
@@ -39,7 +40,7 @@ const startServer = async () => {
     
     // Enable CORS
     app.use(cors({ 
-      origin: ["http://localhost:5174", "http://127.0.0.1:5173"],
+      origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
       credentials: true 
     }));
     
@@ -57,6 +58,7 @@ const startServer = async () => {
     app.use("/api/categories", categoryRoutes);
     app.use("/api/history", historyRoutes);
     app.use("/api", scanRoutes);
+    app.use("/api/assign", assignmentRoutes);
     
     // Express multer error handling middleware
     app.use((err, req, res, next) => {
