@@ -8,6 +8,8 @@ const authRoutes = require("./routes/authRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const historyRoutes = require("./routes/historyRoutes");
 const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
+const RequestNewAssetRoutes = require("./routes/RequestNewAssetRoutes");
+const reportIssueRoutes = require("./routes/reportIssueRoutes");
 const path = require("path");
 const fs = require("fs");
 
@@ -54,7 +56,9 @@ const startServer = async () => {
     app.use("/api/assets", assetRoutes);
     app.use("/api/history", historyRoutes);
     app.use("/api/dashboard", adminDashboardRoutes);
-    
+    app.use("/api/request-asset", RequestNewAssetRoutes);
+    app.use("/api/report-issue", reportIssueRoutes);
+
     // Express multer error handling middleware
     app.use((err, req, res, next) => {
       if (err.name === 'MulterError') {
