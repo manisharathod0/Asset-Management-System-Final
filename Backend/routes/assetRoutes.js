@@ -5,7 +5,6 @@ const router = express.Router();
 const Asset = require("../models/Asset");
 const { assignAsset, getAssignedAssets } = require("../controllers/assetController"); // don't delete
 const History = require("../models/History");
-const Category = require("../models/Category");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
