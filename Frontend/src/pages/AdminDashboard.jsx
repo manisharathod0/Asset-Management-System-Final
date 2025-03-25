@@ -1,16 +1,15 @@
-
-
 import React, { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
-         BarChart, Bar, XAxis, YAxis, Legend,
-         LineChart, Line, AreaChart, Area } from "recharts";
+import {
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, Legend
+} from "recharts";
+import { motion } from "framer-motion";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [activity, setActivity] = useState([]);
   const [error, setError] = useState("");
 
-  // Fetch dashboard stats from backend
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -36,38 +35,35 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <div className="h-screen w-90vh overflow-y-auto bg-gray-100 pt-24 px-6">
-      <div className="max-w-[1200px] mx-auto p-8 bg-white shadow-lg rounded-xl border border-gray-300">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4 mt-20">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}
+        className="w-full max-w-6xl bg-white shadow-xl rounded-lg p-8 border border-gray-200">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-semibold text-gray-800">Welcome to the Admin Dashboard</h1>
+          <h1 className="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
           <p className="text-lg mt-2 text-gray-600">
-            Monitor asset management, track usage, and oversee system activities efficiently.
+            Manage assets, track usage, and oversee system activities efficiently.
           </p>
         </div>
 
-        <h2 className="text-2xl font-medium mb-6 text-gray-800 text-center">Admin Dashboard</h2>
-
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {error && <p className="text-red-500 text-center mb-4 font-semibold">{error}</p>}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
           {stats && stats.map((item, index) => (
-            <div
-              key={index}
-              className="p-4 rounded-lg shadow text-white text-center"
-              style={{ backgroundColor: item.color }}
-            >
-              <h3 className="text-lg font-medium">{item.name}</h3>
-              <p className="text-2xl font-semibold">{item.value}</p>
-            </div>
+            <motion.div key={index} whileHover={{ scale: 1.05 }}
+              className="p-6 rounded-xl text-white text-center shadow-lg"
+              style={{ backgroundColor: item.color }}>
+              <h3 className="text-lg font-semibold">{item.name}</h3>
+              <p className="text-3xl font-bold">{item.value}</p>
+            </motion.div>
           ))}
         </div>
 
         {/* Charts Section */}
-        <div className="mt-8 grid grid-cols-2 gap-6">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Asset Distribution</h3>
-            <div className="w-full h-60">
+            <h3 className="text-xl font-semibold mb-3 text-gray-800">Asset Distribution</h3>
+            <div className="w-full h-64 bg-gray-100 rounded-lg p-4 shadow">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={stats || []} dataKey="value" outerRadius={80} label>
@@ -82,12 +78,12 @@ const AdminDashboard = () => {
           </div>
 
           <div>
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Asset Category Breakdown</h3>
-            <div className="w-full h-60">
+            <h3 className="text-xl font-semibold mb-3 text-gray-800">Asset Category Breakdown</h3>
+            <div className="w-full h-64 bg-gray-100 rounded-lg p-4 shadow">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats || []}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis dataKey="name" tick={{ fill: '#333' }} />
+                  <YAxis tick={{ fill: '#333' }} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="value">
@@ -101,32 +97,31 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Additional charts and recent activity table can be added similarly */}
-        <div className="mt-8">
-          <h3 className="text-xl font-medium mb-3 text-gray-800">Recent Activity</h3>
+        {/* Recent Activity */}
+        <div className="mt-10">
+          <h3 className="text-xl font-semibold mb-3 text-gray-800">Recent Activity</h3>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300">
+            <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead>
-                <tr className="bg-[#3A6D8C] text-white">
-                  <th className="p-3 border">Date</th>
-                  <th className="p-3 border">Time</th>
-                  <th className="p-3 border">Activity</th>
+                <tr className="bg-[#3A6D8C] text-white text-left">
+                  <th className="p-3">Date</th>
+                  <th className="p-3">Time</th>
+                  <th className="p-3">Activity</th>
                 </tr>
               </thead>
               <tbody>
                 {activity.map((entry, idx) => (
-                  <tr key={idx} className="text-center">
-                    <td className="p-3 border">{new Date(entry.date).toLocaleDateString()}</td>
-                    <td className="p-3 border">{new Date(entry.date).toLocaleTimeString()}</td>
-                    <td className="p-3 border">{entry.action}</td>
+                  <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                    <td className="p-3">{new Date(entry.date).toLocaleDateString()}</td>
+                    <td className="p-3">{new Date(entry.date).toLocaleTimeString()}</td>
+                    <td className="p-3">{entry.action}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
-
-      </div>
+      </motion.div>
     </div>
   );
 };
