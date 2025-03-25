@@ -10,7 +10,7 @@ const AdminReturnAsset = () => {
   useEffect(() => {
     const fetchReturnedAssets = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/assets/returned");
+        const response = await axios.get("http://localhost:5000/api/return-logs");
         setLogs(response.data);
       } catch (error) {
         setError("Error fetching returned assets");

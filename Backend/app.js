@@ -8,7 +8,11 @@ const authRoutes = require("./routes/authRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const historyRoutes = require("./routes/historyRoutes");
-const scanRoutes = require("./routes/scanRoutes"); // Import scan routes
+const scanRoutes = require("./routes/scanRoutes"); 
+const assignmentRoutes =require("./routes/assignmentRoutes.js");
+const returnLogRoutes = require("./routes/returnLogRoutes.js");
+const assetRequestRoutes = require('./routes/assetRequestRoutes');
+
 
 const path = require("path");
 const fs = require("fs");
@@ -47,6 +51,7 @@ const startServer = async () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true })); // Added for form data
     
+    
     // Serve static files with correct path
     app.use("/uploads", express.static(path.join(__dirname, "uploads")));
     
@@ -57,6 +62,10 @@ const startServer = async () => {
     app.use("/api/categories", categoryRoutes);
     app.use("/api/history", historyRoutes);
     app.use("/api", scanRoutes);
+    app.use("/api/assign", assignmentRoutes);
+    app.use('/api/return-logs', returnLogRoutes); 
+    app.use('/api/assetrequests', assetRequestRoutes);
+
     
     // Express multer error handling middleware
     app.use((err, req, res, next) => {
