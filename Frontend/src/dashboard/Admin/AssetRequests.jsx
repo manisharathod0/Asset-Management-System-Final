@@ -18,7 +18,7 @@ const AssetRequests = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/requests");
+      const response = await axios.get("http://localhost:5000/api/asset-requests");
       setRequests(response.data);
     } catch (error) {
       console.error("Error fetching asset requests:", error);
@@ -27,7 +27,7 @@ const AssetRequests = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/requests/${id}`, { status: newStatus });
+      await axios.patch(`http://localhost:5000/api/asset-requests/${id}`, { status: newStatus });
       setRequests(requests.map((req) => (req._id === id ? { ...req, status: newStatus } : req)));
     } catch (error) {
       console.error("Error updating request status:", error);
@@ -78,38 +78,23 @@ const AssetRequests = () => {
   };
 
   return (
-    <motion.div
-      className="p-6 mt-30 bg-white shadow-lg rounded-xl"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <h2 className="text-3xl font-bold mb-4 text-gray-800 text-center">
-        Asset Requests
-      </h2>
-
+    <motion.div className="p-6 mt-30 bg-white shadow-lg rounded-xl">
+      <h2 className="text-3xl font-bold mb-4 text-gray-800 text-center">Asset Requests</h2>
       <div className="flex gap-2 mb-4">
         <input
           type="text"
           placeholder="Search assets..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-3 flex-grow border rounded-lg focus:outline-none"
+          className="p-3 flex-grow border rounded-lg"
         />
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="p-3 border rounded-lg"
-        >
+        <select value={filter} onChange={(e) => setFilter(e.target.value)} className="p-3 border rounded-lg">
           <option value="All">All</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
           <option value="Rejected">Rejected</option>
         </select>
-        <select
-          value={exportFormat}
-          onChange={(e) => setExportFormat(e.target.value)}
-          className="p-3 border rounded-lg"
-        >
+        <select value={exportFormat} onChange={(e) => setExportFormat(e.target.value)} className="p-3 border rounded-lg">
           <option value="csv">CSV</option>
           <option value="pdf">PDF</option>
           <option value="excel">Excel</option>
@@ -132,32 +117,14 @@ const AssetRequests = () => {
           </thead>
           <tbody>
             {filteredRequests.map((req) => (
-              <motion.tr
-                key={req._id}
-                className="text-center bg-gray-100 hover:bg-gray-200 transition"
-                initial={{ x: -10, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-              >
+              <motion.tr key={req._id} className="text-center bg-gray-100 hover:bg-gray-200">
                 <td className="p-3 border">{req.asset}</td>
                 <td className="p-3 border">{req.requestedBy}</td>
-                <td className="p-3 border">{req.date}</td>
-                <td className={`p-3 border font-semibold ${
-                  req.status === "Pending" ? "text-yellow-600" :
-                  req.status === "Approved" ? "text-green-600" : "text-red-600"
-                }`}>
-                  {req.status}
-                </td>
+                <td className="p-3 border">{req.requestDate}</td>
+                <td className={`p-3 border ${req.status === "Pending" ? "text-yellow-600" : req.status === "Approved" ? "text-green-600" : "text-red-600"}`}>{req.status}</td>
                 <td className="p-3 border flex justify-center gap-2">
-                  {req.status !== "Approved" && (
-                    <button onClick={() => handleStatusChange(req._id, "Approved")} className="bg-green-500 text-white px-3 py-1 rounded-lg">
-                      Approve
-                    </button>
-                  )}
-                  {req.status !== "Rejected" && (
-                    <button onClick={() => handleStatusChange(req._id, "Rejected")} className="bg-red-500 text-white px-3 py-1 rounded-lg">
-                      Reject
-                    </button>
-                  )}
+                  {req.status !== "Approved" && <button onClick={() => handleStatusChange(req._id, "Approved")} className="bg-green-500 text-white px-3 py-1 rounded-lg">Approve</button>}
+                  {req.status !== "Rejected" && <button onClick={() => handleStatusChange(req._id, "Rejected")} className="bg-red-500 text-white px-3 py-1 rounded-lg">Reject</button>}
                 </td>
               </motion.tr>
             ))}

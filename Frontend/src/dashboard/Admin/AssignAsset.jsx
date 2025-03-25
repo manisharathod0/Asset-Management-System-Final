@@ -1,6 +1,20 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
+const SelectField = ({ label, value, onChange, options, placeholder }) => (
+  <div>
+    <label className="block font-medium">{label}</label>
+    <select value={value} onChange={onChange} className="w-full p-3 border rounded-lg" required>
+      <option value="">{placeholder}</option>
+      {options.map((option) => (
+        <option key={option._id} value={option._id}>
+          {option.name}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
 const AssignAsset = () => {
   const [asset, setAsset] = useState("");
   const [user, setUser] = useState("");
@@ -10,12 +24,13 @@ const AssignAsset = () => {
   const [assets, setAssets] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const fetchAssetsAndUsers = async () => {
     try {
       const [assetResponse, userResponse] = await Promise.all([
         fetch("http://localhost:5000/api/assets"),
-        fetch("http://localhost:5000/api/users")
+        fetch("http://localhost:5000/api/users"),
       ]);
 
       if (!assetResponse.ok || !userResponse.ok) {
@@ -25,7 +40,6 @@ const AssignAsset = () => {
       const assetData = await assetResponse.json();
       const userData = await userResponse.json();
 
-      // Filter available assets
       const availableAssets = assetData.filter((item) => item.status === "Available");
 
       setAssets(availableAssets);
@@ -33,6 +47,7 @@ const AssignAsset = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setErrorMessage(error.message);
       setLoading(false);
     }
   };
@@ -44,6 +59,10 @@ const AssignAsset = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (new Date(dueDate) < new Date(assignedDate)) {
+      return setErrorMessage("Due Date cannot be before Assignment Date.");
+    }
+
     const newAssignment = { assetId: asset, userId: user, assignedDate, dueDate, note };
 
     try {
@@ -53,7 +72,10 @@ const AssignAsset = () => {
         body: JSON.stringify(newAssignment),
       });
 
-      if (!response.ok) throw new Error("Failed to assign asset");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to assign asset");
+      }
 
       alert("Asset Assigned Successfully!");
       fetchAssetsAndUsers();
@@ -63,93 +85,46 @@ const AssignAsset = () => {
       setAssignedDate("");
       setDueDate("");
       setNote("");
+      setErrorMessage("");
     } catch (error) {
       console.error("Error:", error);
-      alert("Error assigning asset");
+      setErrorMessage(error.message);
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="p-6 bg-white shadow-lg rounded-xl max-w-2xl mx-auto mt-30"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
     >
       <h2 className="text-3xl font-bold mb-4 text-gray-800 text-center">Assign Asset</h2>
-      
+
+      {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
       {loading ? (
         <p className="text-center text-gray-600">Loading...</p>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block font-medium">Select Asset</label>
-            <select
-              value={asset}
-              onChange={(e) => setAsset(e.target.value)}
-              className="w-full p-3 border rounded-lg"
-              required
-            >
-              <option value="">-- Choose an Available Asset --</option>
-              {assets.length > 0 ? (
-                assets.map((item) => (
-                  <option key={item._id} value={item._id}>
-                    {item.name} ({item.status})
-                  </option>
-                ))
-              ) : (
-                <option disabled>No Available Assets</option>
-              )}
-            </select>
-          </div>
+          <SelectField label="Select Asset" value={asset} onChange={(e) => setAsset(e.target.value)} options={assets} placeholder="-- Choose an Available Asset --" />
 
-          <div>
-            <label className="block font-medium">Assign To</label>
-            <select
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              className="w-full p-3 border rounded-lg"
-              required
-            >
-              <option value="">-- Choose a User --</option>
-              {users.map((u) => (
-                <option key={u._id} value={u._id}>{u.name}</option>
-              ))}
-            </select>
-          </div>
+          <SelectField label="Assign To" value={user} onChange={(e) => setUser(e.target.value)} options={users} placeholder="-- Choose a User --" />
 
           <div>
             <label className="block font-medium">Assignment Date</label>
-            <input
-              type="date"
-              value={assignedDate}
-              onChange={(e) => setAssignedDate(e.target.value)}
-              className="w-full p-3 border rounded-lg"
-              required
-            />
+            <input type="date" value={assignedDate} onChange={(e) => setAssignedDate(e.target.value)} className="w-full p-3 border rounded-lg" required />
           </div>
 
           <div>
             <label className="block font-medium">Due Date</label>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full p-3 border rounded-lg"
-              required
-            />
+            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full p-3 border rounded-lg" required />
           </div>
 
           <div>
             <label className="block font-medium">Additional Notes</label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Optional notes..."
-              className="w-full p-3 border rounded-lg"
-            ></textarea>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional notes..." className="w-full p-3 border rounded-lg"></textarea>
           </div>
 
-          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg w-full">
+          <button type="submit" className={`text-white px-6 py-2 rounded-lg w-full ${asset && user && assignedDate && dueDate ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"}`} disabled={!asset || !user || !assignedDate || !dueDate}>
             Assign Asset
           </button>
         </form>
