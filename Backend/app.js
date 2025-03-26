@@ -10,6 +10,7 @@ const historyRoutes = require("./routes/historyRoutes");
 const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
 const RequestNewAssetRoutes = require("./routes/RequestNewAssetRoutes");
 const reportIssueRoutes = require("./routes/reportIssueRoutes");
+const maintenanceRoutes = require('./routes/maintenanceRoutes'); // Import routes
 const path = require("path");
 const fs = require("fs");
 
@@ -39,7 +40,7 @@ const startServer = async () => {
     
     // Enable CORS
     app.use(cors({ 
-      origin: ["http://localhost:5173", "http://127.0.0.1:5174"],
+      origin: ["http://localhost:5173", "http://localhost:5174"],
       credentials: true 
     }));
     
@@ -59,6 +60,9 @@ const startServer = async () => {
     app.use("/api/request-asset", RequestNewAssetRoutes);
     app.use("/api/report-issue", reportIssueRoutes);
 
+    // Use maintenance routes
+    app.use('/api/maintenance', maintenanceRoutes); // Mount routes under /api
+    
     // Express multer error handling middleware
     app.use((err, req, res, next) => {
       if (err.name === 'MulterError') {
