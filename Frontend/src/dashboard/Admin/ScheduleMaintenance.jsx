@@ -111,7 +111,7 @@ const ScheduledMaintenance = () => {
                             ) : (
                                 assets.map((asset) => (
                                     <option key={asset._id} value={asset._id}>
-                                        {asset._id} - {asset.asset}
+                                        {asset._id} - {asset.assetName}
                                     </option>
                                 ))
                             )}
