@@ -7,6 +7,12 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const historyRoutes = require("./routes/historyRoutes");
+const scanRoutes = require("./routes/scanRoutes"); 
+const assignmentRoutes =require("./routes/assignmentRoutes.js");
+const returnLogRoutes = require("./routes/returnLogRoutes.js");
+const assetRequestRoutes = require('./routes/assetRequestRoutes');
+
+
 const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
 const RequestNewAssetRoutes = require("./routes/RequestNewAssetRoutes");
 const reportIssueRoutes = require("./routes/reportIssueRoutes");
@@ -48,6 +54,7 @@ const startServer = async () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true })); // Added for form data
     
+    
     // Serve static files with correct path
     app.use("/uploads", express.static(path.join(__dirname, "uploads")));
     
@@ -56,6 +63,11 @@ const startServer = async () => {
     app.use("/api/auth", authRoutes);
     app.use("/api/assets", assetRoutes);
     app.use("/api/history", historyRoutes);
+    app.use("/api", scanRoutes);
+    app.use("/api/assign", assignmentRoutes);
+    app.use('/api/return-logs', returnLogRoutes); 
+    app.use('/api/assetrequests', assetRequestRoutes);
+
     app.use("/api/dashboard", adminDashboardRoutes);
     app.use("/api/request-asset", RequestNewAssetRoutes);
     app.use("/api/report-issue", reportIssueRoutes);

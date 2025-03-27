@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext"; // Adjust the import path as n
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user} = useAuth(); // Access the authentication state, user data function
+  const { isAuthenticated } = useAuth(); // Access the authentication state
   const [scrolled, setScrolled] = React.useState(false);
 
   // Add scroll effect
@@ -22,24 +22,9 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle title click
+  // Handle title click only when not authenticated
   const handleTitleClick = () => {
-    if (isAuthenticated) {
-      // Navigate to the dashboard based on the user's role
-      switch (user?.role) {
-        case "admin":
-          navigate("/admin/dashboard");
-          break;
-        case "manager":
-          navigate("/manager/dashboard");
-          break;
-        case "employee":
-          navigate("/employee/dashboard");
-          break;
-        default:
-          navigate("/"); // Fallback for unknown roles
-      }
-    } else {
+    if (!isAuthenticated) {
       // Navigate to the Welcome Page if not authenticated
       navigate("/");
     }
@@ -55,7 +40,7 @@ const Navbar = () => {
         {/* Logo & Clickable Title with animation */}
         <div
           className="flex items-center space-x-3 flex-shrink-0 cursor-pointer group"
-          onClick={handleTitleClick} // Call handleTitleClick on click
+          onClick={handleTitleClick} // Only active if user is not logged in
         >
           <div className="relative overflow-hidden rounded-full p-1 bg-gradient-to-r from-[#3A6D8C] to-[#6A9AB0] transform group-hover:scale-105 transition-all duration-300">
             <img src="/assets/logo.png" alt="Logo" className="h-12 w-12 rounded-full" />

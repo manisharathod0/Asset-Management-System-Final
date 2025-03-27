@@ -1,8 +1,7 @@
 
-
-
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useRef} from "react";
 import axios from "axios";
+import { QRCodeCanvas  } from "qrcode.react";
 
 const statusColors = {
   Available: "text-green-600",
@@ -13,6 +12,7 @@ const statusColors = {
 };
 
 const AllAssets = () => {
+  const qrRef = useRef(null);
   const [assets, setAssets] = useState([]);
   const [editingAsset, setEditingAsset] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -20,6 +20,8 @@ const AllAssets = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [qrCodeModalOpen, setQRCodeModalOpen] = useState(false);
+  const [selectedAssetForQR, setSelectedAssetForQR] = useState(null);
 
   useEffect(() => {
     fetchAssets();
@@ -54,7 +56,6 @@ const AllAssets = () => {
     if (file) {
       setEditingAsset({ ...editingAsset, newImage: file });
       
-      // Create a preview URL for the image
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -62,7 +63,42 @@ const AllAssets = () => {
       reader.readAsDataURL(file);
     }
   };
-
+  const downloadQRCode = (assetId) => {
+    // Find the QR code canvas for the specific asset
+    const qrCodeContainer = document.getElementById(`qr-${assetId}`);
+    
+    if (!qrCodeContainer) {
+      console.error("QR Code container not found!");
+      return;
+    }
+  
+    // Find the canvas within the container
+    const qrCanvas = qrCodeContainer.querySelector('canvas');
+    
+    if (!qrCanvas) {
+      console.error("QR Code canvas not found!");
+      return;
+    }
+  
+    try {
+      // Convert canvas to data URL
+      const url = qrCanvas.toDataURL("image/png");
+      
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `qrcode-${assetId}.png`;
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading QR code:", error);
+      alert("Failed to download QR code. Please try again.");
+    }
+  };
+  
   const handleSave = async () => {
     setIsSubmitting(true);
     try {
@@ -72,7 +108,7 @@ const AllAssets = () => {
       formData.append("status", editingAsset.status);
       formData.append("description", editingAsset.description || "");
       formData.append("expiryDate", editingAsset.expiryDate || "");
-      formData.append("quantity", editingAsset.quantity.toString()); // Ensure quantity is a string
+      formData.append("quantity", editingAsset.quantity.toString());
       
       if (editingAsset.newImage) {
         formData.append("image", editingAsset.newImage);
@@ -122,17 +158,16 @@ const AllAssets = () => {
       // Determine file extension based on format
       const extension = format.toLowerCase();
       
-      // Create a URL for the blob
+     
+      
       const url = window.URL.createObjectURL(new Blob([response.data]));
       
-      // Create a temporary anchor element and trigger download
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `assets.${extension}`);
       document.body.appendChild(link);
       link.click();
       
-      // Clean up
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
       
@@ -240,6 +275,7 @@ const AllAssets = () => {
             <tr className="bg-[#3A6D8C] text-white">
               <th className="p-3 border">Asset ID</th>
               <th className="p-3 border">Image</th>
+              <th className="p-3 border">QR Code</th>
               <th className="p-3 border">Asset Name</th>
               <th className="p-3 border">Category</th>
               <th className="p-3 border">Status</th>
@@ -270,6 +306,27 @@ const AllAssets = () => {
                       </div>
                     )}
                   </td>
+                  <td className="p-3 border">
+                  <div id={`qr-${asset._id}`} className="flex flex-col items-center">
+  <QRCodeCanvas
+    value={JSON.stringify({
+      id: asset._id,
+      name: asset.name,
+      category: asset.category,
+      status: asset.status,
+    })}
+    size={55}
+  />
+  <button
+    onClick={() => downloadQRCode(asset._id)}
+    className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
+  >
+    Download QR
+  </button>
+</div>
+</td>
+
+
                   <td className="p-3 border">{asset.name}</td>
                   <td className="p-3 border">{asset.category}</td>
                   <td className={`p-3 border font-semibold ${statusColors[asset.status]}`}>
@@ -289,7 +346,7 @@ const AllAssets = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="8" className="p-3 text-center text-gray-500">
+                <td colSpan="7" className="p-3 text-center text-gray-500">
                   {assets.length > 0 ? "No assets match the selected filter." : "No assets found."}
                 </td>
               </tr>
