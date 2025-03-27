@@ -28,6 +28,17 @@ const getAssignedAssets = async (req, res) => {
   }
 };
 
+// Get assets assigned to the logged-in user
+const getMyAssets = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const assignments = await Assignment.find({ user: userId }).populate("asset");
+    res.status(200).json(assignments);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch assets", error });
+  }
+};
+
 // Unassign an asset
 const unassignAsset = async (req, res) => {
   try {
@@ -39,4 +50,4 @@ const unassignAsset = async (req, res) => {
   }
 };
 
-module.exports = { assignAsset, getAssignedAssets, unassignAsset };
+module.exports = { assignAsset, getAssignedAssets, getMyAssets, unassignAsset };
