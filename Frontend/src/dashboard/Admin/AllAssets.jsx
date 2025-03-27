@@ -19,6 +19,9 @@ const AllAssets = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [qrCodeModalOpen, setQRCodeModalOpen] = useState(false);
+  const [selectedAssetForQR, setSelectedAssetForQR] = useState(null);
 
   useEffect(() => {
     fetchAssets();
@@ -343,7 +346,7 @@ const AllAssets = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="8" className="p-3 text-center text-gray-500">
+                <td colSpan="7" className="p-3 text-center text-gray-500">
                   {assets.length > 0 ? "No assets match the selected filter." : "No assets found."}
                 </td>
               </tr>
