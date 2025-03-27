@@ -3,34 +3,26 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem("user") ? true : false;
-  });
-
   const [user, setUser] = useState(() => {
     return JSON.parse(localStorage.getItem("user")) || null;
   });
 
+  const isAuthenticated = !!user; // Derived state instead of separate useState
+
   const login = (token, role) => {
     const userData = { token, role };
-    localStorage.setItem("user", JSON.stringify(userData)); 
-    setIsAuthenticated(true);
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-  };  
+  };
 
   const logout = () => {
-    localStorage.removeItem("user"); // Remove user data from storage
-    setIsAuthenticated(false);
+    localStorage.removeItem("user");
     setUser(null);
   };
 
-  // Ensure user data is loaded from localStorage on refresh
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    }
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) setUser(storedUser);
   }, []);
 
   return (

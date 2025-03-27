@@ -7,11 +7,16 @@ const ViewMyAsset = () => {
   const [error, setError] = useState("");
 
   const fetchAssets = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return setError("Authentication token not found. Please login.");
+    const user = JSON.parse(localStorage.getItem("user")); 
+    const token = user?.token;
+
+    if (!token) {
+      setError("Authentication token not found. Please login.");
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:5000/api/assignments/my-assets", {
+      const response = await fetch("http://localhost:5000/api/assign/my-assets", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -61,8 +66,9 @@ const ViewMyAsset = () => {
                   initial={{ x: -10, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                 >
-                  <td className="p-3 border">{asset.assetName}</td>
-                  <td className="p-3 border font-semibold text-blue-600">{asset.status}</td>
+                 <td className="p-3 border">{asset.asset?.name || "N/A"}</td>
+<td className="p-3 border font-semibold text-blue-600">{asset.asset?.status || "N/A"}</td>
+
                   <td className="p-3 border">{new Date(asset.assignedDate).toLocaleDateString()}</td>
                   <td className="p-3 border">{new Date(asset.dueDate).toLocaleDateString()}</td>
                 </motion.tr>
