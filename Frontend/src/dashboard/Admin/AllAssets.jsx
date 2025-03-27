@@ -1,3 +1,4 @@
+
 import { useEffect, useState ,useRef} from "react";
 import axios from "axios";
 import { QRCodeCanvas  } from "qrcode.react";
@@ -18,8 +19,6 @@ const AllAssets = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
-  const [qrCodeModalOpen, setQRCodeModalOpen] = useState(false);
-  const [selectedAssetForQR, setSelectedAssetForQR] = useState(null);
 
   useEffect(() => {
     fetchAssets();
@@ -138,27 +137,58 @@ const AllAssets = () => {
     return date.toLocaleDateString();
   };
 
-  const handleDownload = async () => {
+  // Format the MongoDB ID to be more user-friendly
+  const formatAssetId = (id) => {
+    if (!id) return "N/A";
+    // Take the last 6 characters of the ID and uppercase them
+    const shortId = id.slice(-6).toUpperCase();
+    return `AST-${shortId}`;
+  };
+
+  const handleExport = async (format) => {
     try {
-      const response = await axios.get("http://localhost:5000/api/assets/export", {
-        responseType: 'blob',
+      // Using axios to get the file in the specified format
+      const response = await axios.get(`http://localhost:5000/api/assets/export/${format}`, {
+        responseType: 'blob', // Important for handling file downloads
       });
+      
+      // Determine file extension based on format
+      const extension = format.toLowerCase();
+      
+     
       
       const url = window.URL.createObjectURL(new Blob([response.data]));
       
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'assets.csv');
+      link.setAttribute('download', `assets.${extension}`);
       document.body.appendChild(link);
       link.click();
       
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
+      
+      // Close the export menu
+      setExportMenuOpen(false);
     } catch (error) {
-      console.error("Error downloading assets:", error);
-      alert("Failed to download assets. Please try again.");
+      console.error(`Error downloading assets as ${format}:`, error);
+      alert(`Failed to download assets as ${format}. Please try again.`);
     }
   };
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (exportMenuOpen && !event.target.closest('.export-menu-container')) {
+        setExportMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [exportMenuOpen]);
 
   // Filter assets based on selected status
   const filteredAssets = filterStatus === "All" 
@@ -182,15 +212,57 @@ const AllAssets = () => {
             <option value="Returned">Returned</option>
             <option value="Retired">Retired</option>
           </select>
-          <button
-            onClick={handleDownload}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Download CSV
-          </button>
+          
+          {/* Export dropdown button */}
+          <div className="relative export-menu-container">
+            <button
+              onClick={() => setExportMenuOpen(!exportMenuOpen)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export
+            </button>
+            
+            {exportMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1">
+                <button
+                  onClick={() => handleExport('csv')}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                    CSV
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleExport('xlsx')}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                    Excel
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleExport('pdf')}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                    PDF
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
@@ -198,6 +270,7 @@ const AllAssets = () => {
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-[#3A6D8C] text-white">
+              <th className="p-3 border">Asset ID</th>
               <th className="p-3 border">Image</th>
               <th className="p-3 border">QR Code</th>
               <th className="p-3 border">Asset Name</th>
@@ -212,6 +285,9 @@ const AllAssets = () => {
             {filteredAssets.length > 0 ? (
               filteredAssets.map((asset) => (
                 <tr key={asset._id} className="text-center hover:bg-gray-50">
+                  <td className="p-3 border font-medium">
+                    {formatAssetId(asset._id)}
+                  </td>
                   <td className="p-3 border">
                     {asset.image ? (
                       <div className="w-17 h-16 mx-auto">
@@ -279,7 +355,9 @@ const AllAssets = () => {
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-screen overflow-y-auto">
-            <h2 className="text-xl font-semibold mb-4">Edit Asset</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Edit Asset: {formatAssetId(editingAsset._id)}
+            </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="mb-4">

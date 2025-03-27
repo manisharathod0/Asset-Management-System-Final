@@ -1,13 +1,14 @@
 const express = require("express");
 const Asset = require("../models/Asset");
 const History = require("../models/History");
-const Category = require("../models/Category");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const router = express.Router();
 
 
+const ExcelJS = require('exceljs');
+const PDFDocument = require('pdfkit');
 
 
 // Configure multer for image uploads
@@ -160,28 +161,239 @@ router.get("/history", async (req, res) => {
   }
 });
 
-// ➤ Export assets to CSV - new endpoint
-router.get("/export", async (req, res) => {
+// ➤ Export assets to different formats (CSV, XLSX, PDF)
+router.get("/export/:format", async (req, res) => {
   try {
+    const format = req.params.format.toLowerCase();
     const assets = await Asset.find();
     
-    // Create CSV header
-    let csv = "Name,Category,Status,Quantity,Expiry Date,Description\n";
+    // Format asset ID function
+    const formatAssetId = (id) => {
+      return `AST-${id.toString().slice(-6).toUpperCase()}`;
+    };
     
-    // Add rows for each asset
-    assets.forEach(asset => {
-      const expiryDate = asset.expiryDate ? new Date(asset.expiryDate).toLocaleDateString() : "N/A";
-      csv += `"${asset.name}","${asset.category}","${asset.status}","${asset.quantity || 1}","${expiryDate}","${asset.description || ''}"\n`;
-    });
+    // Format date function
+    const formatDate = (dateString) => {
+      if (!dateString) return "N/A";
+      return new Date(dateString).toLocaleDateString();
+    };
     
-    // Set response headers for CSV download
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=assets.csv');
-    
-    // Send the CSV data
-    res.status(200).send(csv);
+    if (format === 'csv') {
+      // CSV Export
+      let csv = "Asset ID,Name,Category,Status,Quantity,Expiry Date,Description\n";
+      
+      assets.forEach(asset => {
+        const expiryDate = asset.expiryDate ? formatDate(asset.expiryDate) : "N/A";
+        const assetId = formatAssetId(asset._id);
+        csv += `"${assetId}","${asset.name}","${asset.category}","${asset.status}","${asset.quantity || 1}","${expiryDate}","${asset.description || ''}"\n`;
+      });
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=assets.csv');
+      return res.status(200).send(csv);
+      
+    } else if (format === 'xlsx') {
+      // Excel Export
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Assets');
+      
+      // Add header row with styling
+      worksheet.columns = [
+        { header: 'Asset ID', key: 'id', width: 15 },
+        { header: 'Name', key: 'name', width: 20 },
+        { header: 'Category', key: 'category', width: 15 },
+        { header: 'Status', key: 'status', width: 18 },
+        { header: 'Quantity', key: 'quantity', width: 10 },
+        { header: 'Expiry Date', key: 'expiryDate', width: 15 },
+        { header: 'Description', key: 'description', width: 30 }
+      ];
+      
+      // Style the header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '3A6D8C' }
+      };
+      worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFF' } };
+      
+      // Add asset data
+      assets.forEach(asset => {
+        worksheet.addRow({
+          id: formatAssetId(asset._id),
+          name: asset.name,
+          category: asset.category,
+          status: asset.status,
+          quantity: asset.quantity || 1,
+          expiryDate: asset.expiryDate ? formatDate(asset.expiryDate) : "N/A",
+          description: asset.description || ''
+        });
+      });
+      
+      // Apply status color coding
+      const statusColors = {
+        'Available': '008000', // green
+        'Assigned': '0000FF',  // blue
+        'Under Maintenance': 'FF0000', // red
+        'Retired': '808080',   // gray
+        'Returned': 'FFA500'   // orange
+      };
+      
+      // Apply color to status column
+      for (let i = 2; i <= assets.length + 1; i++) {
+        const status = worksheet.getCell(`D${i}`).value;
+        if (status && statusColors[status]) {
+          worksheet.getCell(`D${i}`).font = {
+            color: { argb: statusColors[status] },
+            bold: true
+          };
+        }
+      }
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=assets.xlsx');
+      
+      // Write to buffer and send response
+      const buffer = await workbook.xlsx.writeBuffer();
+      return res.status(200).send(buffer);
+      
+    } else if (format === 'pdf') {
+      // PDF Export
+      const doc = new PDFDocument({ margin: 30, size: 'A4' });
+      
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=assets.pdf');
+      
+      // Pipe PDF directly to response
+      doc.pipe(res);
+      
+      // Add a title
+      doc.fontSize(18).text('Asset Inventory Report', { align: 'center' });
+      doc.moveDown();
+      
+      // Add the date
+      doc.fontSize(10).text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'right' });
+      doc.moveDown(2);
+      
+      // Define table layout
+      const tableTop = 150;
+      const tableLeft = 30;
+      const colWidths = [80, 100, 70, 80, 60, 80, 100]; // widths for each column
+      const rowHeight = 25;
+      
+      // Draw table header
+      doc.fontSize(10).font('Helvetica-Bold');
+      
+      // Draw header background
+      doc.fillColor('#3A6D8C')
+         .rect(tableLeft, tableTop, doc.page.width - tableLeft * 2, rowHeight)
+         .fill();
+      
+      // Draw header text
+      doc.fillColor('white');
+      const headers = ['Asset ID', 'Name', 'Category', 'Status', 'Quantity', 'Expiry Date', 'Description'];
+      let xPos = tableLeft;
+      
+      headers.forEach((header, i) => {
+        doc.text(header, xPos + 5, tableTop + 8, { width: colWidths[i], align: 'left' });
+        xPos += colWidths[i];
+      });
+      
+      // Draw table rows
+      doc.font('Helvetica');
+      let yPos = tableTop + rowHeight;
+      
+      // Define status colors for PDF
+      const pdfStatusColors = {
+        'Available': '#008000', // green
+        'Assigned': '#0000FF',  // blue
+        'Under Maintenance': '#FF0000', // red
+        'Retired': '#808080',   // gray
+        'Returned': '#FFA500'   // orange
+      };
+      
+      // Draw alternating row backgrounds and data
+      assets.forEach((asset, index) => {
+        // Draw row background (alternating)
+        doc.fillColor(index % 2 === 0 ? '#f4f4f4' : 'white')
+           .rect(tableLeft, yPos, doc.page.width - tableLeft * 2, rowHeight)
+           .fill();
+        
+        // Reset position
+        xPos = tableLeft;
+        
+        // Format data for each cell
+        const rowData = [
+          formatAssetId(asset._id),
+          asset.name,
+          asset.category,
+          asset.status,
+          asset.quantity || 1,
+          asset.expiryDate ? formatDate(asset.expiryDate) : "N/A",
+          asset.description || ''
+        ];
+        
+        // Draw each cell
+        rowData.forEach((text, i) => {
+          // Use status color for status column
+          if (i === 3 && pdfStatusColors[text]) {
+            doc.fillColor(pdfStatusColors[text]);
+          } else {
+            doc.fillColor('black');
+          }
+          
+          doc.text(String(text), xPos + 5, yPos + 8, { 
+            width: colWidths[i], 
+            align: 'left',
+            lineBreak: false,
+            ellipsis: true
+          });
+          
+          xPos += colWidths[i];
+        });
+        
+        // Move to next row
+        yPos += rowHeight;
+        
+        // Add a new page if needed
+        if (yPos > doc.page.height - 50) {
+          doc.addPage();
+          yPos = 50;
+          
+          // Add column headers to new page
+          doc.fontSize(10).font('Helvetica-Bold');
+          doc.fillColor('#3A6D8C')
+             .rect(tableLeft, yPos, doc.page.width - tableLeft * 2, rowHeight)
+             .fill();
+          
+          doc.fillColor('white');
+          let headerXPos = tableLeft;
+          
+          headers.forEach((header, i) => {
+            doc.text(header, headerXPos + 5, yPos + 8, { width: colWidths[i], align: 'left' });
+            headerXPos += colWidths[i];
+          });
+          
+          doc.font('Helvetica');
+          yPos += rowHeight;
+        }
+      });
+      
+      // Add total count
+      doc.moveDown(2);
+      doc.fillColor('black').font('Helvetica-Bold');
+      doc.text(`Total Assets: ${assets.length}`, tableLeft, yPos + 20);
+      
+      // Finalize PDF
+      doc.end();
+      return;
+      
+    } else {
+      return res.status(400).json({ message: "Unsupported export format. Please use 'csv', 'xlsx', or 'pdf'." });
+    }
   } catch (error) {
-    console.error("Error exporting assets:", error);
+    console.error(`Error exporting assets as ${req.params.format}:`, error);
     res.status(500).json({ error: error.message });
   }
 });

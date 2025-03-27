@@ -1,58 +1,73 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, Legend,
-  LineChart, Line, AreaChart, Area
+  BarChart, Bar, XAxis, YAxis, Legend
 } from "recharts";
-
-const data = [
-  { name: "Total Assets", value: 150, color: "#3A6D8C" },
-  { name: "Assigned Assets", value: 85, color: "#6A9AB0" },
-  { name: "Pending Requests", value: 20, color: "#5C7D8A" }, // Monochromatic replacement for beige
-  { name: "Under Maintenance", value: 15, color: "#001F3F" },
-];
+import { motion } from "framer-motion";
 
 const AdminDashboard = () => {
+  const [stats, setStats] = useState(null);
+  const [activity, setActivity] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const statsRes = await fetch("http://localhost:5000/api/dashboard/stats");
+        const statsData = await statsRes.json();
+        setStats([
+          { name: "Total Assets", value: statsData.totalAssets, color: "#3A6D8C" },
+          { name: "Assigned Assets", value: statsData.assignedAssets, color: "#6A9AB0" },
+          { name: "Pending Requests", value: statsData.pendingRequests, color: "#5C7D8A" },
+          { name: "Under Maintenance", value: statsData.underMaintenance, color: "#001F3F" },
+        ]);
+
+        const activityRes = await fetch("http://localhost:5000/api/dashboard/activity");
+        const activityData = await activityRes.json();
+        setActivity(activityData);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+        setError("Failed to load dashboard data");
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   return (
-    <div className="h-screen w-90vh overflow-y-auto bg-gray-100 pt-24 px-6">
-      {/* Dashboard Container with Marginal Border, Centered Horizontally */}
-      <div className="max-w-[1200px] mx-auto p-8 bg-white shadow-lg rounded-xl border border-gray-300">
-        
-        {/* Welcome Message */}
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4 mt-20">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}
+        className="w-full max-w-6xl bg-white shadow-xl rounded-lg p-8 border border-gray-200">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-semibold text-gray-800">Welcome to the Admin Dashboard</h1>
+          <h1 className="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
           <p className="text-lg mt-2 text-gray-600">
-            Monitor asset management, track usage, and oversee system activities efficiently.
+            Manage assets, track usage, and oversee system activities efficiently.
           </p>
         </div>
 
-        {/* Admin Dashboard Header */}
-        <h2 className="text-2xl font-medium mb-6 text-gray-800 text-center">Admin Dashboard</h2>
+        {error && <p className="text-red-500 text-center mb-4 font-semibold">{error}</p>}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-6">
-          {data.map((item, index) => (
-            <div
-              key={index}
-              className="p-4 rounded-lg shadow text-white text-center"
-              style={{ backgroundColor: item.color }}
-            >
-              <h3 className="text-lg font-medium">{item.name}</h3>
-              <p className="text-2xl font-semibold">{item.value}</p>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
+          {stats && stats.map((item, index) => (
+            <motion.div key={index} whileHover={{ scale: 1.05 }}
+              className="p-6 rounded-xl text-white text-center shadow-lg"
+              style={{ backgroundColor: item.color }}>
+              <h3 className="text-lg font-semibold">{item.name}</h3>
+              <p className="text-3xl font-bold">{item.value}</p>
+            </motion.div>
           ))}
         </div>
 
         {/* Charts Section */}
-        <div className="mt-8 grid grid-cols-2 gap-6">
-          {/* Asset Distribution */}
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Asset Distribution</h3>
-            <div className="w-full h-60">
+            <h3 className="text-xl font-semibold mb-3 text-gray-800">Asset Distribution</h3>
+            <div className="w-full h-64 bg-gray-100 rounded-lg p-4 shadow">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={data} dataKey="value" outerRadius={80} label>
-                    {data.map((entry, index) => (
+                  <Pie data={stats || []} dataKey="value" outerRadius={80} label>
+                    {(stats || []).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -61,19 +76,20 @@ const AdminDashboard = () => {
               </ResponsiveContainer>
             </div>
           </div>
-          {/* Asset Category Breakdown */}
+
           <div>
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Asset Category Breakdown</h3>
-            <div className="w-full h-60">
+            <h3 className="text-xl font-semibold mb-3 text-gray-800">Asset Category Breakdown</h3>
+            <div className="w-full h-64 bg-gray-100 rounded-lg p-4 shadow">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                <BarChart data={stats || []}>
+                  <XAxis dataKey="name" tick={{ fill: '#333' }} />
+                  <YAxis tick={{ fill: '#333' }} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="value">
-                    {data.map((entry, index) => (
- <Cell key={`cell-${index}`} fill={entry.color} />                    ))}
+                    {(stats || []).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -81,62 +97,31 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* More Charts */}
-        <div className="mt-8 grid grid-cols-2 gap-6">
-          {/* Asset Growth */}
-          <div>
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Asset Growth</h3>
-            <div className="w-full h-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#3A6D8C" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-          {/* Asset Usage Over Time */}
-          <div>
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Asset Usage Over Time</h3>
-            <div className="w-full h-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="value" stroke="#6A9AB0" fill="#6A9AB0" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity Table */}
-        <div className="mt-8">
-          <h3 className="text-xl font-medium mb-3 text-gray-800">Recent Activity</h3>
+        {/* Recent Activity */}
+        <div className="mt-10">
+          <h3 className="text-xl font-semibold mb-3 text-gray-800">Recent Activity</h3>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300">
+            <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead>
-                <tr className="bg-[#3A6D8C] text-white">
-                  <th className="p-3 border">Date</th>
-                  <th className="p-3 border">Time</th>
-                  <th className="p-3 border">Activity</th>
+                <tr className="bg-[#3A6D8C] text-white text-left">
+                  <th className="p-3">Date</th>
+                  <th className="p-3">Time</th>
+                  <th className="p-3">Activity</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="text-center">
-                  <td className="p-3 border">2025-02-24</td>
-                  <td className="p-3 border">10:00 AM</td>
-                  <td className="p-3 border">Assigned Laptop to John Doe</td>
-                </tr>
+                {activity.map((entry, idx) => (
+                  <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                    <td className="p-3">{new Date(entry.date).toLocaleDateString()}</td>
+                    <td className="p-3">{new Date(entry.date).toLocaleTimeString()}</td>
+                    <td className="p-3">{entry.action}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
-
-      </div>
+      </motion.div>
     </div>
   );
 };

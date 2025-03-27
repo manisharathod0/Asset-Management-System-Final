@@ -34,7 +34,7 @@ import QRCodeLog from "./dashboard/Admin/QRCodeLog";
 // Import Employee components
 import ViewMyAsset from "./dashboard/Employee/ViewMyAsset";
 import ContactAdmin from "./dashboard/Employee/ContactAdmin";
-import Guidlines from "./dashboard/Employee/Guidlines";
+import Guidelines from "./dashboard/Employee/Guidelines";
 import ScanQRCode from "./dashboard/Employee/ScanQRCode";
 import ViewRequestStatus from "./dashboard/Employee/ViewRequestStatus";
 import ReturnRequest from "./dashboard/Employee/ReturnRequest";
@@ -267,7 +267,7 @@ const App = () => {
               path="/employee/guidelines"
               element={
                 <Layout>
-                  <Guidlines />
+                  <Guidelines />
                 </Layout>
               }
             />
