@@ -9,15 +9,38 @@ const ReportAnIssue = () => {
   const [category, setCategory] = useState("");
   const [issue, setIssue] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Issue reported Successfully for ${assetName} (ID: ${assetId}, Category: ${category}): ${issue}`);
-    // Reset the form fields
-    setAssetName("");
-    setAssetId("");
-    setCategory("");
-    setIssue("");
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/maintenance/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assetName,
+          assetId,
+          category,
+          issueDescription: issue,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to report issue");
+      }
+  
+      alert(`Issue reported successfully for ${assetName}`);
+      
+      // Reset form fields
+      setAssetName("");
+      setAssetId("");
+      setCategory("");
+      setIssue("");
+    } catch (error) {
+      console.error("Error reporting issue:", error);
+      alert("Failed to report issue. Please try again.");
+    }
   };
+  
 
   return (
     <motion.div 
