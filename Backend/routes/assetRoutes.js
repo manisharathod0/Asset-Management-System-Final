@@ -1,21 +1,15 @@
-
-
 const express = require("express");
-const router = express.Router();
 const Asset = require("../models/Asset");
-const { assignAsset, getAssignedAssets } = require("../controllers/assetController"); // don't delete
 const History = require("../models/History");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const router = express.Router();
+
+
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 
-// Enhanced error logging middleware
-router.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
-  next();
-});
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
