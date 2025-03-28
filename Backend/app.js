@@ -14,9 +14,6 @@ const scanRoutes = require("./routes/scanRoutes");
 const assignmentRoutes =require("./routes/assignmentRoutes.js");
 const returnLogRoutes = require("./routes/returnLogRoutes.js");
 const assetRequestRoutes = require('./routes/assetRequestRoutes');
-
-
-
 const maintenanceRoutes = require('./routes/maintenanceRoutes'); // Import routes
 const path = require("path");
 const fs = require("fs");
