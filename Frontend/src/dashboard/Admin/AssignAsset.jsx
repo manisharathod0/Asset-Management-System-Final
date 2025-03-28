@@ -25,6 +25,7 @@ const AssignAsset = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const fetchAssetsAndUsers = async () => {
     try {
@@ -34,7 +35,7 @@ const AssignAsset = () => {
       ]);
 
       if (!assetResponse.ok || !userResponse.ok) {
-        throw new Error("Failed to fetch data");
+        throw new Error("Failed to fetch data. Please try again.");
       }
 
       const assetData = await assetResponse.json();
@@ -59,6 +60,10 @@ const AssignAsset = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!assignedDate || !dueDate) {
+      return setErrorMessage("Please select valid dates.");
+    }
+
     if (new Date(dueDate) < new Date(assignedDate)) {
       return setErrorMessage("Due Date cannot be before Assignment Date.");
     }
@@ -74,10 +79,10 @@ const AssignAsset = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to assign asset");
+        throw new Error(errorData.message || "Failed to assign asset.");
       }
 
-      alert("Asset Assigned Successfully!");
+      setSuccessMessage("Asset assigned successfully!");
       fetchAssetsAndUsers();
 
       setAsset("");
@@ -101,6 +106,8 @@ const AssignAsset = () => {
       <h2 className="text-3xl font-bold mb-4 text-gray-800 text-center">Assign Asset</h2>
 
       {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
+      {successMessage && <p className="text-green-500 text-center">{successMessage}</p>}
+
       {loading ? (
         <p className="text-center text-gray-600">Loading...</p>
       ) : (
@@ -124,8 +131,8 @@ const AssignAsset = () => {
             <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional notes..." className="w-full p-3 border rounded-lg"></textarea>
           </div>
 
-          <button type="submit" className={`text-white px-6 py-2 rounded-lg w-full ${asset && user && assignedDate && dueDate ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"}`} disabled={!asset || !user || !assignedDate || !dueDate}>
-            Assign Asset
+          <button type="submit" className={`text-white px-6 py-2 rounded-lg w-full ${asset && user && assignedDate && dueDate ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"}`} disabled={!asset || !user || !assignedDate || !dueDate || loading}>
+            {loading ? "Assigning..." : "Assign Asset"}
           </button>
         </form>
       )}

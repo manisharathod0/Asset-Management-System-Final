@@ -7,15 +7,16 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const historyRoutes = require("./routes/historyRoutes");
+const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
+const RequestNewAssetRoutes = require("./routes/RequestNewAssetRoutes");
+const reportIssueRoutes = require("./routes/reportIssueRoutes");
 const scanRoutes = require("./routes/scanRoutes"); 
 const assignmentRoutes =require("./routes/assignmentRoutes.js");
 const returnLogRoutes = require("./routes/returnLogRoutes.js");
 const assetRequestRoutes = require('./routes/assetRequestRoutes');
 
 
-const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
-const RequestNewAssetRoutes = require("./routes/RequestNewAssetRoutes");
-const reportIssueRoutes = require("./routes/reportIssueRoutes");
+
 const maintenanceRoutes = require('./routes/maintenanceRoutes'); // Import routes
 const path = require("path");
 const fs = require("fs");
