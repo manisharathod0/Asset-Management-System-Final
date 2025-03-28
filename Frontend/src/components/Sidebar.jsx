@@ -251,7 +251,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         subItems: [
           { name: "Scheduled Maintenance", path: "/admin/scheduled-maintenance" },
           { name: "Request Repair", path: "/admin/request-repair" },
-          { name: "Repair Status", path: "/admin/repair-status" },
         ],
       },
       {

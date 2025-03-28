@@ -24,7 +24,7 @@ import AdminReturnAsset from "./dashboard/Admin/AdminReturnAsset";
 import AssetRequests from "./dashboard/Admin/AssetRequests";
 import ScheduledMaintenance from "./dashboard/Admin/ScheduleMaintenance";
 import RequestRepair from "./dashboard/Admin/RequestRepair";
-import RepairStatus from "./dashboard/Admin/RepairStatus";
+// import RepairStatus from "./dashboard/Admin/RepairStatus";
 import AllUsers from "./dashboard/Admin/AllUsers";
 import AddUser from "./dashboard/Admin/AddUser";
 import GenerateQR from "./dashboard/Admin/GenerateQR";
@@ -146,14 +146,14 @@ const App = () => {
                 </Layout>
               }
             />
-            <Route
+            {/* <Route
               path="/admin/repair-status"
               element={
                 <Layout>
                   <RepairStatus />
                 </Layout>
               }
-            />
+            /> */}
             <Route
               path="/admin/asset-requests"
               element={
