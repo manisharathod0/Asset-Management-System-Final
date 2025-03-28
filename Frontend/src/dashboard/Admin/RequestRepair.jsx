@@ -133,8 +133,8 @@ const RequestRepair = () => {
       initial={{ x: -10, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
     >
-      <td className="p-3 border">{entry.asset || "N/A"}</td> {/* Ensure asset name is visible */}
-      <td className="p-3 border">{entry.technicianName || "Unassigned"}</td> {/* Display technician name */}
+      <td className="p-3 border">{entry.assetName || "N/A"}</td> {/* Ensure asset name is visible */}
+      <td className="p-3 border">{entry.technician || "Unassigned"}</td> {/* Display technician name */}
       <td className="p-3 border">{entry.task}</td>
       <td className="p-3 border">{entry.date}</td>
       <td
