@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -13,6 +14,23 @@ const ReturnRequest = () => {
   // Get the current user
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const token = user?.token;
+
+  // Format the MongoDB ID to be more user-friendly - same as in AdminReturnAsset.jsx
+  const formatAssetId = (id) => {
+    if (!id) return "N/A";
+    
+    // Convert to string to ensure we can use string methods
+    const idStr = String(id);
+    
+    // Check if it's a valid string to operate on
+    if (idStr.length < 6) {
+      return `AST-${idStr}`;
+    }
+    
+    // Take the last 6 characters of the ID and uppercase them
+    const shortId = idStr.slice(-6).toUpperCase();
+    return `AST-${shortId}`;
+  };
 
   // Fetch assets assigned to the current user
   const fetchAssets = async () => {
@@ -165,7 +183,7 @@ const ReturnRequest = () => {
                       initial={{ x: -10, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                     >
-                      <td className="p-3 border">{asset.asset?._id || "N/A"}</td>
+                      <td className="p-3 border">{formatAssetId(asset.asset?._id)}</td>
                       <td className="p-3 border">{asset.asset?.name || "N/A"}</td>
                       <td className="p-3 border">{new Date(asset.assignedDate).toLocaleDateString()}</td>
                       <td className="p-3 border">
@@ -232,7 +250,7 @@ const ReturnRequest = () => {
                     initial={{ x: -10, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                   >
-                    <td className="p-3 border">{request.assetId}</td>
+                    <td className="p-3 border">{formatAssetId(request.assetId)}</td>
                     <td className="p-3 border">{request.name}</td>
                     <td className="p-3 border">{new Date(request.returnDetails?.returnDate).toLocaleDateString()}</td>
                     <td className={`p-3 border font-semibold ${
