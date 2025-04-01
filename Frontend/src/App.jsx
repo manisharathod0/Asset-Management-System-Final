@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import WelcomePage from "./pages/WelcomePage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Signup from "./pages/SignUp";
 
 // Import Admin components
 import AllAssets from "./dashboard/Admin/AllAssets";
@@ -91,6 +92,17 @@ const App = () => {
                 <Navbar />
                 <div className="auth-container">
                   <LoginPage />
+                </div>
+              </div>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <div className="app-container">
+                <Navbar />
+                <div className="auth-container">
+                  <Signup/>
                 </div>
               </div>
             }
