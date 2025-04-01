@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -22,7 +20,7 @@ const RequestNewAsset = () => {
     e.preventDefault();
     setError("");
     try {
-      const response = await fetch("http://localhost:5000/api/request-asset", {
+      const response = await fetch("http://localhost:5000/api/assetrequests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
