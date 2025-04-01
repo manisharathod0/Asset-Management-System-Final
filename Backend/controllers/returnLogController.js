@@ -12,7 +12,9 @@ exports.createReturnLog = async (req, res) => {
     const newReturnLog = new ReturnLog({
       assetId,
       name,
-      returnDetails
+      returnDetails,
+      employeeId: req.user?.id, // Get employee ID from auth middleware
+      status: "pending" // Default status
     });
     
     const savedReturnLog = await newReturnLog.save();
@@ -35,6 +37,22 @@ exports.getAllReturnLogs = async (req, res) => {
   }
 };
 
+// Get employee's return logs
+exports.getMyReturnLogs = async (req, res) => {
+  try {
+    const employeeId = req.user?.id;
+    if (!employeeId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const returnLogs = await ReturnLog.find({ employeeId }).sort({ 'returnDetails.returnDate': -1 });
+    res.status(200).json(returnLogs);
+  } catch (error) {
+    console.error('Error fetching employee return logs:', error);
+    res.status(500).json({ message: 'Failed to fetch return logs', error: error.message });
+  }
+};
+
 // Get a single return log by ID
 exports.getReturnLogById = async (req, res) => {
   try {
@@ -48,6 +66,37 @@ exports.getReturnLogById = async (req, res) => {
   } catch (error) {
     console.error('Error fetching return log:', error);
     res.status(500).json({ message: 'Failed to fetch return log', error: error.message });
+  }
+};
+
+// Update return log status (approve/reject)
+exports.updateReturnLogStatus = async (req, res) => {
+  try {
+    const { status, processedBy, processedDate } = req.body;
+    
+    if (!status || !['approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    
+    const returnLog = await ReturnLog.findByIdAndUpdate(
+      req.params.id,
+      { 
+        status,
+        processedBy,
+        processedDate,
+        processedByAdmin: true
+      },
+      { new: true }
+    );
+    
+    if (!returnLog) {
+      return res.status(404).json({ message: 'Return log not found' });
+    }
+    
+    res.status(200).json(returnLog);
+  } catch (error) {
+    console.error('Error updating return log status:', error);
+    res.status(500).json({ message: 'Failed to update return log status', error: error.message });
   }
 };
 

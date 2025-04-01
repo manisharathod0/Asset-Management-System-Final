@@ -1,6 +1,6 @@
 
 
-import { useEffect, useState ,useRef} from "react";
+import { useEffect, useState} from "react";
 import axios from "axios";
 import { QRCodeCanvas  } from "qrcode.react";
 
@@ -13,7 +13,7 @@ const statusColors = {
 };
 
 const AllAssets = () => {
-  const qrRef = useRef(null);
+  
   const [assets, setAssets] = useState([]);
   const [editingAsset, setEditingAsset] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -21,8 +21,6 @@ const AllAssets = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
-  const [qrCodeModalOpen, setQRCodeModalOpen] = useState(false);
-  const [selectedAssetForQR, setSelectedAssetForQR] = useState(null);
 
   useEffect(() => {
     fetchAssets();

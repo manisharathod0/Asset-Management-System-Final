@@ -9,6 +9,9 @@ const returnLogSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  employeeId: {
+    type: mongoose.Schema.Types.Mixed // User ID reference
+  },
   returnDetails: {
     returnDate: {
       type: Date,
@@ -27,9 +30,20 @@ const returnLogSchema = new mongoose.Schema({
       type: String
     }
   },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
   processedByAdmin: {
     type: Boolean,
     default: false
+  },
+  processedBy: {
+    type: String
+  },
+  processedDate: {
+    type: Date
   },
   createdAt: {
     type: Date,
