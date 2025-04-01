@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const SelectField = ({ label, value, onChange, options, placeholder }) => (
+const SelectField = ({ label, value, onChange, options, placeholder, isAsset = false }) => (
   <div>
     <label className="block font-medium">{label}</label>
     <select value={value} onChange={onChange} className="w-full p-3 border rounded-lg" required>
       <option value="">{placeholder}</option>
       {options.map((option) => (
         <option key={option._id} value={option._id}>
-          {option.name}
+          {isAsset 
+            ? `AST-${option._id.slice(-6).toUpperCase()} - ${option.name} (${option.category})` 
+            : option.name}
         </option>
       ))}
     </select>
@@ -112,26 +114,64 @@ const AssignAsset = () => {
         <p className="text-center text-gray-600">Loading...</p>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <SelectField label="Select Asset" value={asset} onChange={(e) => setAsset(e.target.value)} options={assets} placeholder="-- Choose an Available Asset --" />
+          <SelectField 
+            label="Select Asset" 
+            value={asset} 
+            onChange={(e) => setAsset(e.target.value)} 
+            options={assets} 
+            placeholder="-- Choose an Available Asset --" 
+            isAsset={true} 
+          />
 
-          <SelectField label="Assign To" value={user} onChange={(e) => setUser(e.target.value)} options={users} placeholder="-- Choose a User --" />
+          <SelectField 
+            label="Assign To" 
+            value={user} 
+            onChange={(e) => setUser(e.target.value)} 
+            options={users} 
+            placeholder="-- Choose a User --" 
+          />
 
           <div>
             <label className="block font-medium">Assignment Date</label>
-            <input type="date" value={assignedDate} onChange={(e) => setAssignedDate(e.target.value)} className="w-full p-3 border rounded-lg" required />
+            <input 
+              type="date" 
+              value={assignedDate} 
+              onChange={(e) => setAssignedDate(e.target.value)} 
+              className="w-full p-3 border rounded-lg" 
+              required 
+            />
           </div>
 
           <div>
             <label className="block font-medium">Due Date</label>
-            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full p-3 border rounded-lg" required />
+            <input 
+              type="date" 
+              value={dueDate} 
+              onChange={(e) => setDueDate(e.target.value)} 
+              className="w-full p-3 border rounded-lg" 
+              required 
+            />
           </div>
 
           <div>
             <label className="block font-medium">Additional Notes</label>
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional notes..." className="w-full p-3 border rounded-lg"></textarea>
+            <textarea 
+              value={note} 
+              onChange={(e) => setNote(e.target.value)} 
+              placeholder="Optional notes..." 
+              className="w-full p-3 border rounded-lg"
+            ></textarea>
           </div>
 
-          <button type="submit" className={`text-white px-6 py-2 rounded-lg w-full ${asset && user && assignedDate && dueDate ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"}`} disabled={!asset || !user || !assignedDate || !dueDate || loading}>
+          <button 
+            type="submit" 
+            className={`text-white px-6 py-2 rounded-lg w-full ${
+              asset && user && assignedDate && dueDate 
+                ? "bg-blue-600 hover:bg-blue-700" 
+                : "bg-gray-400 cursor-not-allowed"
+            }`} 
+            disabled={!asset || !user || !assignedDate || !dueDate || loading}
+          >
             {loading ? "Assigning..." : "Assign Asset"}
           </button>
         </form>
