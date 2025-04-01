@@ -13,7 +13,7 @@ const AdminReturnAsset = () => {
         const response = await axios.get("http://localhost:5000/api/return-logs");
         setLogs(response.data);
       } catch (error) {
-        setError("Error fetching returned assets");
+        setError(error);
       } finally {
         setLoading(false);
       }

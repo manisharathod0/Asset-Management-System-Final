@@ -1,28 +1,42 @@
 const mongoose = require('mongoose');
 
 const returnLogSchema = new mongoose.Schema({
-  asset: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Asset',
+  assetId: {
+    type: mongoose.Schema.Types.Mixed, // Can be ObjectId or another ID type
     required: true
   },
-  returnedBy: {
+  name: {
     type: String,
     required: true
   },
-  returnDate: {
+  returnDetails: {
+    returnDate: {
+      type: Date,
+      default: Date.now
+    },
+    condition: {
+      type: String,
+      enum: ['Good', 'Minor Damage', 'Major Damage'],
+      default: 'Good'
+    },
+    returnedBy: {
+      type: String,
+      required: true
+    },
+    notes: {
+      type: String
+    }
+  },
+  processedByAdmin: {
+    type: Boolean,
+    default: false
+  },
+  createdAt: {
     type: Date,
     default: Date.now
-
-  },
-  condition: {
-    type: String,
-    enum: ['Good', 'Damaged', 'Needs Repair'],
-    required: true
-  },
-  notes: {
-    type: String
   }
-}, { timestamps: true });
+});
 
-module.exports = mongoose.model('ReturnLog', returnLogSchema);
+const ReturnLog = mongoose.model('ReturnLog', returnLogSchema);
+
+module.exports = ReturnLog;

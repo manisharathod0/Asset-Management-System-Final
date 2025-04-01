@@ -1,74 +1,68 @@
-const ReturnLog = require('../models/ReturnLog');
-const Asset = require('../models/Asset');
+const ReturnLog = require('../models/ReturnLog'); // Assuming you have this model
 
-// ➤ Create a return log entry
+// Create a return log
 exports.createReturnLog = async (req, res) => {
   try {
-    const { assetId, returnedBy, conditionStatus, comments } = req.body;
-
-    // Validate required fields
-    if (!assetId || !returnedBy || !conditionStatus) {
-      return res.status(400).json({ message: 'Asset ID, Returned By, and Condition Status are required' });
+    const { assetId, name, returnDetails } = req.body;
+    
+    if (!assetId || !name || !returnDetails) {
+      return res.status(400).json({ message: 'Required fields are missing' });
     }
-
-    // Check if the asset exists
-    const asset = await Asset.findById(assetId);
-    if (!asset) {
-      return res.status(404).json({ message: 'Asset not found' });
-    }
-
-    // Create return log entry
-    const returnLog = new ReturnLog({
-      asset: assetId,
-      returnedBy,
-      conditionStatus,
-      comments,
+    
+    const newReturnLog = new ReturnLog({
+      assetId,
+      name,
+      returnDetails
     });
-
-    await returnLog.save();
-
-    res.status(201).json({ message: 'Return log created successfully', returnLog });
+    
+    const savedReturnLog = await newReturnLog.save();
+    
+    res.status(201).json(savedReturnLog);
   } catch (error) {
     console.error('Error creating return log:', error);
-    res.status(500).json({ message: 'Internal server error', error });
+    res.status(500).json({ message: 'Failed to create return log', error: error.message });
   }
 };
 
-// ➤ Get all return logs
+// Get all return logs
 exports.getAllReturnLogs = async (req, res) => {
   try {
-    const returnLogs = await ReturnLog.find().populate('asset');
+    const returnLogs = await ReturnLog.find({}).sort({ 'returnDetails.returnDate': -1 });
     res.status(200).json(returnLogs);
   } catch (error) {
     console.error('Error fetching return logs:', error);
-    res.status(500).json({ message: 'Internal server error', error });
+    res.status(500).json({ message: 'Failed to fetch return logs', error: error.message });
   }
 };
 
-// ➤ Get a single return log by ID
+// Get a single return log by ID
 exports.getReturnLogById = async (req, res) => {
   try {
-    const returnLog = await ReturnLog.findById(req.params.id).populate('asset');
+    const returnLog = await ReturnLog.findById(req.params.id);
+    
     if (!returnLog) {
       return res.status(404).json({ message: 'Return log not found' });
     }
+    
     res.status(200).json(returnLog);
   } catch (error) {
     console.error('Error fetching return log:', error);
-    res.status(500).json({ message: 'Internal server error', error });
+    res.status(500).json({ message: 'Failed to fetch return log', error: error.message });
   }
 };
 
-// ➤ Delete a return log by ID
+// Delete a return log
 exports.deleteReturnLog = async (req, res) => {
   try {
-    const returnLog = await ReturnLog.findByIdAndDelete(req.params.id);
-    if (!returnLog) {
+    const deletedReturnLog = await ReturnLog.findByIdAndDelete(req.params.id);
+    
+    if (!deletedReturnLog) {
       return res.status(404).json({ message: 'Return log not found' });
     }
+    
     res.status(200).json({ message: 'Return log deleted successfully' });
   } catch (error) {
     console.error('Error deleting return log:', error);
-    res.status(500).json({ message: 'Internal server error', error });
+    res.status(500).json({ message: 'Failed to delete return log', error: error.message });
   }
 };
