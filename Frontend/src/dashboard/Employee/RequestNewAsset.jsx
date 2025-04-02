@@ -1,5 +1,350 @@
+
+// import { useState } from "react";
+// import { motion } from "framer-motion";
+
+// const RequestNewAsset = () => {
+//   const [formData, setFormData] = useState({
+//     assetId: "",
+//     assetName: "",
+//     category: "",
+//     reason: "",
+//   });
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [submitted, setSubmitted] = useState(false);
+//   const [error, setError] = useState("");
+
+//   // Color palette
+//   const colors = {
+//     darkBlue: "#001F3F",
+//     mediumBlue: "#3A6D8C",
+//     lightBlue: "#6A9AB0",
+//     sand: "#EAD8B1"
+//   };
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prevData) => ({ ...prevData, [name]: value }));
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError("");
+//     setIsSubmitting(true);
+    
+//     try {
+//       const response = await fetch("http://localhost:5000/api/assetrequests", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify(formData),
+//       });
+      
+//       if (!response.ok) {
+//         const data = await response.json();
+//         throw new Error(data.message || "Submission failed.");
+//       }
+      
+//       setSubmitted(true);
+      
+//       // Clear the form after submission
+//       setFormData({
+//         assetId: "",
+//         assetName: "",
+//         category: "",
+//         reason: "",
+//       });
+//     } catch (err) {
+//       console.error("Submission error:", err);
+//       setError(err.message || "Something went wrong. Please try again.");
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   const inputClasses = "w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:border-transparent bg-white transition-all duration-300";
+//   const labelClasses = "block text-sm font-medium mb-1 text-gray-700";
+  
+//   const containerVariants = {
+//     hidden: { opacity: 0 },
+//     visible: { 
+//       opacity: 1,
+//       transition: { 
+//         staggerChildren: 0.1,
+//         delayChildren: 0.3
+//       }
+//     }
+//   };
+  
+//   const itemVariants = {
+//     hidden: { y: 20, opacity: 0 },
+//     visible: { 
+//       y: 0, 
+//       opacity: 1,
+//       transition: { type: "spring", stiffness: 300, damping: 24 }
+//     }
+//   };
+
+//   const successVariants = {
+//     hidden: { scale: 0.8, opacity: 0 },
+//     visible: { 
+//       scale: 1, 
+//       opacity: 1,
+//       transition: { 
+//         type: "spring", 
+//         stiffness: 200, 
+//         damping: 20 
+//       }
+//     }
+//   };
+  
+//   return (
+//     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-6 mt-12">
+//       <motion.div 
+//         initial={{ opacity: 0, y: 30 }}
+//         animate={{ opacity: 1, y: 0 }}
+//         transition={{ duration: 0.6, ease: "easeOut" }}
+//         style={{ 
+//           backgroundColor: colors.sand, 
+//           boxShadow: `0 15px 35px rgba(0, 31, 63, 0.15)`,
+//           borderLeft: `4px solid ${colors.darkBlue}`
+//         }}
+//         className="w-full max-w-2xl p-8 rounded-3xl overflow-hidden relative"
+//       >
+//         {/* Decorative elements */}
+//         <motion.div 
+//           initial={{ opacity: 0, scale: 0 }}
+//           animate={{ opacity: 0.3, scale: 1 }}
+//           transition={{ delay: 0.3, duration: 0.7 }}
+//           style={{ backgroundColor: colors.lightBlue }}
+//           className="absolute -top-20 -right-20 w-56 h-56 rounded-full"
+//         ></motion.div>
+//         <motion.div 
+//           initial={{ opacity: 0, scale: 0 }}
+//           animate={{ opacity: 0.2, scale: 1 }}
+//           transition={{ delay: 0.5, duration: 0.7 }}
+//           style={{ backgroundColor: colors.mediumBlue }}
+//           className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full"
+//         ></motion.div>
+//         <motion.div 
+//           initial={{ opacity: 0, x: -30 }}
+//           animate={{ opacity: 0.15, x: 0 }}
+//           transition={{ delay: 0.7, duration: 0.5 }}
+//           style={{ backgroundColor: colors.darkBlue }}
+//           className="absolute top-1/3 -left-10 w-20 h-20 rounded-full"
+//         ></motion.div>
+        
+//         {/* Header */}
+//         <div className="relative z-10 mb-8">
+//           <motion.h2 
+//             initial={{ opacity: 0, y: -10 }}
+//             animate={{ opacity: 1, y: 0 }}
+//             transition={{ duration: 0.5 }}
+//             style={{ color: colors.darkBlue }} 
+//             className="text-3xl font-bold mb-2"
+//           >
+//             Request New Asset
+//           </motion.h2>
+//           <motion.div
+//             initial={{ width: 0 }}
+//             animate={{ width: "60px" }}
+//             transition={{ delay: 0.6, duration: 0.4 }}
+//             style={{ backgroundColor: colors.mediumBlue, height: "3px" }}
+//             className="mb-3"
+//           />
+//           <motion.p 
+//             initial={{ opacity: 0 }}
+//             animate={{ opacity: 1 }}
+//             transition={{ delay: 0.4, duration: 0.5 }}
+//             style={{ color: colors.mediumBlue }} 
+//             className="text-sm"
+//           >
+//             Please provide the details of the asset you'd like to request
+//           </motion.p>
+//         </div>
+        
+//         {submitted ? (
+//           <motion.div 
+//             className="text-center py-12"
+//             variants={successVariants}
+//             initial="hidden"
+//             animate="visible"
+//           >
+//             <motion.div 
+//               className="mx-auto mb-6 w-20 h-20 rounded-full flex items-center justify-center"
+//               initial={{ scale: 0 }}
+//               animate={{ scale: 1 }}
+//               transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+//               style={{ backgroundColor: colors.mediumBlue }}
+//             >
+//               <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+//               </svg>
+//             </motion.div>
+//             <motion.h3 
+//               style={{ color: colors.darkBlue }} 
+//               className="text-2xl font-bold mb-3"
+//               initial={{ opacity: 0, y: 20 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ delay: 0.3 }}
+//             >
+//               Asset Request Submitted Successfully!
+//             </motion.h3>
+//             <motion.p 
+//               style={{ color: colors.mediumBlue }} 
+//               className="mb-6 max-w-md mx-auto"
+//               initial={{ opacity: 0 }}
+//               animate={{ opacity: 1 }}
+//               transition={{ delay: 0.5 }}
+//             >
+//               Your asset request has been submitted and will be reviewed by our team shortly.
+//             </motion.p>
+//             <motion.button
+//               whileHover={{ scale: 1.05 }}
+//               whileTap={{ scale: 0.98 }}
+//               onClick={() => setSubmitted(false)}
+//               style={{ backgroundColor: colors.mediumBlue, color: 'white' }}
+//               className="px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-300 hover:shadow-lg"
+//             >
+//               Request Another Asset
+//             </motion.button>
+//           </motion.div>
+//         ) : (
+//           <motion.form 
+//             onSubmit={handleSubmit} 
+//             className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-5"
+//             variants={containerVariants}
+//             initial="hidden"
+//             animate="visible"
+//           >
+//             <motion.div variants={itemVariants} className="md:col-span-1">
+//               <label className={labelClasses} style={{ color: colors.darkBlue }}>
+//                 Asset ID
+//               </label>
+//               <motion.input
+//                 whileFocus={{ scale: 1.01 }}
+//                 type="text"
+//                 name="assetId"
+//                 value={formData.assetId}
+//                 onChange={handleChange}
+//                 placeholder="Enter asset ID"
+//                 className={inputClasses}
+//                 style={{ borderColor: colors.mediumBlue }}
+//                 required
+//               />
+//             </motion.div>
+            
+//             <motion.div variants={itemVariants} className="md:col-span-1">
+//               <label className={labelClasses} style={{ color: colors.darkBlue }}>
+//                 Asset Name
+//               </label>
+//               <motion.input
+//                 whileFocus={{ scale: 1.01 }}
+//                 type="text"
+//                 name="assetName"
+//                 value={formData.assetName}
+//                 onChange={handleChange}
+//                 placeholder="Enter asset name"
+//                 className={inputClasses}
+//                 style={{ borderColor: colors.mediumBlue }}
+//                 required
+//               />
+//             </motion.div>
+            
+//             <motion.div variants={itemVariants} className="md:col-span-2">
+//               <label className={labelClasses} style={{ color: colors.darkBlue }}>
+//                 Category
+//               </label>
+//               <motion.select
+//                 whileFocus={{ scale: 1.01 }}
+//                 name="category"
+//                 value={formData.category}
+//                 onChange={handleChange}
+//                 className={`${inputClasses} cursor-pointer`}
+//                 style={{ borderColor: colors.mediumBlue }}
+//                 required
+//               >
+//                 <option value="">Select a category</option>
+//                 <option value="Hardware">Hardware</option>
+//                 <option value="Software">Software</option>
+//                 <option value="Furniture">Furniture</option>
+//                 <option value="Office Supplies">Office Supplies</option>
+//                 <option value="Other">Other</option>
+//               </motion.select>
+//             </motion.div>
+            
+//             <motion.div variants={itemVariants} className="md:col-span-2">
+//               <label className={labelClasses} style={{ color: colors.darkBlue }}>
+//                 Reason for Request
+//               </label>
+//               <motion.textarea 
+//                 whileFocus={{ scale: 1.01 }}
+//                 name="reason"
+//                 value={formData.reason}
+//                 onChange={handleChange}
+//                 className={`${inputClasses} resize-none`}
+//                 style={{ borderColor: colors.mediumBlue }}
+//                 rows="5"
+//                 placeholder="Explain why you need this asset"
+//                 required
+//               ></motion.textarea>
+//             </motion.div>
+            
+//             <motion.div variants={itemVariants} className="md:col-span-2 mt-4">
+//               <motion.button 
+//                 whileHover={{ scale: 1.02, backgroundColor: colors.mediumBlue }}
+//                 whileTap={{ scale: 0.98 }}
+//                 type="submit" 
+//                 disabled={isSubmitting}
+//                 style={{ 
+//                   backgroundColor: colors.darkBlue,
+//                   opacity: isSubmitting ? 0.7 : 1
+//                 }}
+//                 className="w-full py-4 rounded-xl text-white font-medium transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+//               >
+//                 {isSubmitting ? (
+//                   <>
+//                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+//                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+//                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+//                     </svg>
+//                     Processing...
+//                   </>
+//                 ) : (
+//                   'Submit Request'
+//                 )}
+//               </motion.button>
+//             </motion.div>
+            
+//             {error && (
+//               <motion.div 
+//                 variants={itemVariants}
+//                 className="md:col-span-2"
+//               >
+//                 <motion.p
+//                   initial={{ opacity: 0 }}
+//                   animate={{ opacity: 1 }}
+//                   style={{
+//                     color: "#e53e3e",
+//                     textAlign: "center",
+//                     padding: "0.75rem",
+//                     borderRadius: "8px",
+//                     background: "rgba(229, 62, 62, 0.1)",
+//                   }}
+//                 >
+//                   {error}
+//                 </motion.p>
+//               </motion.div>
+//             )}
+//           </motion.form>
+//         )}
+//       </motion.div>
+//     </div>
+//   );
+// };
+
+// export default RequestNewAsset;
+
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const RequestNewAsset = () => {
   const [formData, setFormData] = useState({
@@ -8,126 +353,346 @@ const RequestNewAsset = () => {
     category: "",
     reason: "",
   });
-  const [toast, setToast] = useState({ visible: false, message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+
+  // Color palette
+  const colors = {
+    darkBlue: "#001F3F",
+    mediumBlue: "#3A6D8C",
+    lightBlue: "#6A9AB0",
+    sand: "#EAD8B1"
+  };
+
+  // Different color theme for this component
+  // Using primarily dark blue with sand accent, different from ReportAnIssue
+  const theme = {
+    primary: colors.darkBlue,
+    secondary: colors.sand,
+    accent: colors.lightBlue,
+    background: colors.mediumBlue,
+    text: "#ffffff"
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
+    
     try {
       const response = await fetch("http://localhost:5000/api/assetrequests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      
       if (!response.ok) {
         const data = await response.json();
-        setError(data.message || "Submission failed.");
-      } else {
-        // Show toast notification
-        setToast({ visible: true, message: "Request submitted successfully!" });
-        // Optionally clear the form after submission
-        setFormData({
-          assetId: "",
-          assetName: "",
-          category: "",
-          reason: "",
-        });
-        // Hide the toast after 3 seconds
-        setTimeout(() => setToast({ visible: false, message: "" }), 3000);
+        throw new Error(data.message || "Submission failed.");
       }
+      
+      setSubmitted(true);
+      
+      // Clear the form after submission
+      setFormData({
+        assetId: "",
+        assetName: "",
+        category: "",
+        reason: "",
+      });
     } catch (err) {
       console.error("Submission error:", err);
-      setError("Something went wrong. Please try again.");
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  return (
-    <div className="p-8 bg-white shadow-2xl rounded-xl max-w-3xl mx-auto mt-25 relative">
-      <h2 className="text-4xl font-bold mb-6 text-gray-800 text-center">
-        Request New Asset
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Asset ID</label>
-          <input
-            type="text"
-            name="assetId"
-            value={formData.assetId}
-            onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter asset ID"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Asset Name</label>
-          <input
-            type="text"
-            name="assetName"
-            value={formData.assetName}
-            onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter asset name"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Category</label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter asset category"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Reason for Request</label>
-          <textarea
-            name="reason"
-            value={formData.reason}
-            onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Explain why you need this asset"
-            rows="4"
-            required
-          ></textarea>
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-3 rounded-lg font-bold hover:shadow-xl transition transform hover:scale-105"
-        >
-          Submit Request
-        </button>
-        {error && (
-          <p className="text-center text-red-600 font-semibold mt-4">
-            {error}
-          </p>
-        )}
-      </form>
+  const inputClasses = "w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:border-transparent bg-white transition-all duration-300";
+  const labelClasses = "block text-sm font-medium mb-1";
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1,
+        delayChildren: 0.3
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300, damping: 24 }
+    }
+  };
 
-      {/* Toast Notification */}
-      <AnimatePresence>
-        {toast.visible && (
-          <motion.div
-            className="fixed top-6 right-6 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 50 }}
-            transition={{ duration: 0.3 }}
+  const successVariants = {
+    hidden: { scale: 0.8, opacity: 0 },
+    visible: { 
+      scale: 1, 
+      opacity: 1,
+      transition: { 
+        type: "spring", 
+        stiffness: 200, 
+        damping: 20 
+      }
+    }
+  };
+  
+  return (
+    <div className="flex items-center justify-center min-h-screen p-6 mt-12"
+         style={{ backgroundColor: theme.accent, backgroundImage: `linear-gradient(135deg, ${colors.lightBlue}50, ${colors.darkBlue}90)` }}>
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ 
+          backgroundColor: theme.secondary, 
+          boxShadow: `0 15px 35px rgba(0, 31, 63, 0.25)`,
+          borderRight: `4px solid ${theme.primary}`
+        }}
+        className="w-full max-w-2xl p-8 rounded-3xl overflow-hidden relative"
+      >
+        {/* Decorative elements - different positioning and colors than ReportAnIssue */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 0.3, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.7 }}
+          style={{ backgroundColor: theme.primary }}
+          className="absolute -bottom-20 -right-20 w-56 h-56 rounded-full"
+        ></motion.div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 0.2, scale: 1 }}
+          transition={{ delay: 0.5, duration: 0.7 }}
+          style={{ backgroundColor: theme.accent }}
+          className="absolute -top-24 -left-24 w-64 h-64 rounded-full"
+        ></motion.div>
+        <motion.div 
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 0.15, x: 0 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+          style={{ backgroundColor: theme.background }}
+          className="absolute bottom-1/3 -right-10 w-20 h-20 rounded-full"
+        ></motion.div>
+        
+        {/* Header - different styling than ReportAnIssue */}
+        <div className="relative z-10 mb-8">
+          <motion.h2 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ color: theme.primary }} 
+            className="text-3xl font-bold mb-2"
           >
-            {toast.message}
+            Request New Asset
+          </motion.h2>
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: "80px" }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+            style={{ backgroundColor: theme.background, height: "4px" }}
+            className="mb-3"
+          />
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            style={{ color: theme.primary }} 
+            className="text-sm"
+          >
+            Please provide the details of the asset you'd like to request
+          </motion.p>
+        </div>
+        
+        {submitted ? (
+          <motion.div 
+            className="text-center py-12"
+            variants={successVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div 
+              className="mx-auto mb-6 w-20 h-20 rounded-full flex items-center justify-center"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+              style={{ backgroundColor: theme.primary }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </motion.div>
+            <motion.h3 
+              style={{ color: theme.primary }} 
+              className="text-2xl font-bold mb-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              Asset Request Submitted Successfully!
+            </motion.h3>
+            <motion.p 
+              style={{ color: theme.background }} 
+              className="mb-6 max-w-md mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Your asset request has been submitted and will be reviewed by our team shortly.
+            </motion.p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSubmitted(false)}
+              style={{ backgroundColor: theme.primary, color: theme.text }}
+              className="px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-300 hover:shadow-lg"
+            >
+              Request Another Asset
+            </motion.button>
           </motion.div>
+        ) : (
+          <motion.form 
+            onSubmit={handleSubmit} 
+            className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-5"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div variants={itemVariants} className="md:col-span-1">
+              <label className={labelClasses} style={{ color: theme.primary }}>
+                Asset ID
+              </label>
+              <motion.input
+                whileFocus={{ scale: 1.01 }}
+                type="text"
+                name="assetId"
+                value={formData.assetId}
+                onChange={handleChange}
+                placeholder="Enter asset ID"
+                className={inputClasses}
+                style={{ borderColor: theme.background }}
+                required
+              />
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="md:col-span-1">
+              <label className={labelClasses} style={{ color: theme.primary }}>
+                Asset Name
+              </label>
+              <motion.input
+                whileFocus={{ scale: 1.01 }}
+                type="text"
+                name="assetName"
+                value={formData.assetName}
+                onChange={handleChange}
+                placeholder="Enter asset name"
+                className={inputClasses}
+                style={{ borderColor: theme.background }}
+                required
+              />
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="md:col-span-2">
+              <label className={labelClasses} style={{ color: theme.primary }}>
+                Category
+              </label>
+              <motion.select
+                whileFocus={{ scale: 1.01 }}
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className={`${inputClasses} cursor-pointer`}
+                style={{ borderColor: theme.background }}
+                required
+              >
+                <option value="">Select a category</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Office Supplies">Office Supplies</option>
+                <option value="Other">Other</option>
+              </motion.select>
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="md:col-span-2">
+              <label className={labelClasses} style={{ color: theme.primary }}>
+                Reason for Request
+              </label>
+              <motion.textarea 
+                whileFocus={{ scale: 1.01 }}
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+                className={`${inputClasses} resize-none`}
+                style={{ borderColor: theme.background }}
+                rows="5"
+                placeholder="Explain why you need this asset"
+                required
+              ></motion.textarea>
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="md:col-span-2 mt-4">
+              <motion.button 
+                whileHover={{ scale: 1.02, backgroundColor: theme.background }}
+                whileTap={{ scale: 0.98 }}
+                type="submit" 
+                disabled={isSubmitting}
+                style={{ 
+                  backgroundColor: theme.primary,
+                  opacity: isSubmitting ? 0.7 : 1,
+                  color: theme.text
+                }}
+                className="w-full py-4 rounded-xl font-medium transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  'Submit Request'
+                )}
+              </motion.button>
+            </motion.div>
+            
+            {error && (
+              <motion.div 
+                variants={itemVariants}
+                className="md:col-span-2"
+              >
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  style={{
+                    color: "#e53e3e",
+                    textAlign: "center",
+                    padding: "0.75rem",
+                    borderRadius: "8px",
+                    background: "rgba(229, 62, 62, 0.1)",
+                  }}
+                >
+                  {error}
+                </motion.p>
+              </motion.div>
+            )}
+          </motion.form>
         )}
-      </AnimatePresence>
+      </motion.div>
     </div>
   );
 };
