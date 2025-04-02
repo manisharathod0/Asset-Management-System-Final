@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, Legend,
-  LineChart, Line, AreaChart, Area
+  BarChart, Bar, XAxis, YAxis, Legend
 } from "recharts";
 import { motion } from "framer-motion";
 
@@ -13,11 +12,17 @@ const EmployeeDashboard = () => {
     approvedRequests: 0,
     rejectedRequests: 0
   });
-  const [assets, setAssets] = useState([]);
-  const [requests, setRequests] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Define color palette for consistent use - using admin colors
+  const colors = {
+    darkNavy: "#001F3F",
+    primary: "#3A6D8C",
+    secondary: "#6A9AB0",
+    accent: "#EAD8B1"
+  };
 
   // Get user auth token
   const getToken = () => {
@@ -25,7 +30,7 @@ const EmployeeDashboard = () => {
     return user?.token;
   };
 
-  // Fetch assigned assets
+  // Fetch assigned assets - only for count purposes now
   const fetchAssets = async () => {
     const token = getToken();
     
@@ -46,7 +51,6 @@ const EmployeeDashboard = () => {
       }
       
       const data = await response.json();
-      setAssets(data);
       
       // Update dashboard counter
       setDashboardData(prev => ({
@@ -79,7 +83,6 @@ const EmployeeDashboard = () => {
       }
       
       const data = await response.json();
-      setRequests(data);
       
       // Count requests by status for dashboard
       const pendingCount = data.filter(req => req.status === "Pending").length;
@@ -149,37 +152,68 @@ const EmployeeDashboard = () => {
   // Prepare chart data
   const prepareChartData = () => {
     return [
-      { name: "Assigned Assets", value: dashboardData.assignedAssets, color: "#3A6D8C" },
-      { name: "Pending Requests", value: dashboardData.pendingRequests, color: "#6A9AB0" },
-      { name: "Approved Requests", value: dashboardData.approvedRequests, color: "#5C7D8A" },
-      { name: "Rejected Requests", value: dashboardData.rejectedRequests, color: "#001F3F" },
+      { name: "Assets", value: dashboardData.assignedAssets, color: colors.darkNavy },
+      { name: "Pending", value: dashboardData.pendingRequests, color: colors.primary },
+      { name: "Approved", value: dashboardData.approvedRequests, color: colors.secondary },
+      { name: "Rejected", value: dashboardData.rejectedRequests, color: colors.accent },
     ];
   };
 
   const chartData = prepareChartData();
 
-  // Loading state UI
+  // Status badge component for consistent styling
+  const StatusBadge = ({ status }) => {
+    const getStatusColor = () => {
+      switch(status) {
+        case "Completed": return { bg: colors.primary, text: "#ffffff" };
+        case "Pending": return { bg: colors.secondary, text: "#ffffff" };
+        case "Approved": return { bg: colors.accent, text: colors.darkNavy };
+        case "Rejected": return { bg: colors.darkNavy, text: "#ffffff" };
+        default: return { bg: "#f5f5f5", text: colors.darkNavy };
+      }
+    };
+    
+    const { bg, text } = getStatusColor();
+    
+    return (
+      <span 
+        className="px-3 py-1 rounded-full text-sm font-medium"
+        style={{ backgroundColor: bg, color: text }}
+      >
+        {status}
+      </span>
+    );
+  };
+
+  // Loading state UI - using admin style
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <h2 className="text-2xl font-medium text-gray-800">Loading your dashboard...</h2>
-          <p className="mt-2 text-gray-600">Please wait while we fetch your data.</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(to bottom, #f5f7fa, #e4e7eb)" }}>
+        <div className="bg-white p-8 rounded-lg shadow-xl max-w-md text-center border-t-4" style={{ borderColor: colors.primary }}>
+          <h2 className="text-2xl font-semibold" style={{ color: colors.darkNavy }}>Loading Dashboard</h2>
+          <div className="w-20 h-1 mx-auto my-3 rounded" style={{ backgroundColor: colors.accent }}></div>
+          <p style={{ color: colors.primary }}>Fetching your asset management data...</p>
+          <div className="mt-6 flex justify-center">
+            <div className="w-10 h-10 rounded-full border-4 border-t-transparent animate-spin" 
+                 style={{ borderColor: `${colors.secondary} transparent ${colors.secondary} transparent` }}></div>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Error state UI
+  // Error state UI - using admin style
   if (error) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-100">
-        <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-2xl font-medium text-red-600">Dashboard Error</h2>
-          <p className="mt-2 text-gray-700">{error}</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(to bottom, #f5f7fa, #e4e7eb)" }}>
+        <div className="bg-white p-8 rounded-lg shadow-xl max-w-md text-center border-t-4 border-red-500">
+          <h2 className="text-2xl font-semibold" style={{ color: colors.darkNavy }}>Dashboard Error</h2>
+          <div className="w-20 h-1 mx-auto my-3 rounded bg-red-200"></div>
+          <p className="text-red-600">{error}</p>
           <button 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="mt-6 px-6 py-2 text-white rounded-lg shadow-md hover:shadow-lg"
             onClick={() => window.location.reload()}
+            style={{ backgroundColor: colors.primary }}
           >
             Retry
           </button>
@@ -189,128 +223,183 @@ const EmployeeDashboard = () => {
   }
 
   return (
-    <div className="h-screen w-90vh overflow-y-auto bg-gray-100 pt-24 px-6">
-      {/* Dashboard Container */}
+    <div 
+      className="min-h-screen flex flex-col items-center py-10 px-4 mt-16"
+      style={{ background: "linear-gradient(to bottom, #f5f7fa, #e4e7eb)" }}
+    >
+      {/* Main Container - using admin styling */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-[1200px] mx-auto p-8 bg-white shadow-lg rounded-xl border border-gray-300"
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.7 }}
+        className="w-full max-w-6xl bg-white shadow-xl rounded-lg overflow-hidden border-t-4"
+        style={{ borderColor: colors.primary }}
       >
-        {/* Welcome Message */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-semibold text-gray-800">Welcome to Your Employee Dashboard</h1>
-          <p className="text-lg mt-2 text-gray-600">
-            View your assigned assets, request status, and activity logs.
-          </p>
-        </div>
+        <div className="p-6 bg-white">
+          {/* Header - matching admin style */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold" style={{ color: colors.darkNavy }}>
+              Employee Dashboard
+            </h1>
+            <div className="w-20 h-1 mx-auto my-3 rounded" style={{ backgroundColor: colors.accent }}></div>
+            <p className="text-lg text-gray-600">
+              Asset Management System
+            </p>
+          </div>
 
-        {/* Dashboard Header */}
-        <h2 className="text-2xl font-medium mb-6 text-gray-800 text-center">Employee Dashboard</h2>
+          {/* Stats Grid - matching admin style */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
+            {chartData.map((item, index) => (
+              <motion.div 
+                key={index} 
+                whileHover={{ scale: 1.04, boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="p-6 rounded-xl text-white text-center shadow-lg relative overflow-hidden"
+                style={{ backgroundColor: item.color }}
+              >
+                <div className="absolute top-0 right-0 w-12 h-12 bg-white opacity-10 rounded-full -translate-y-6 translate-x-6"></div>
+                <h3 className="text-lg font-semibold mb-1">{item.name}</h3>
+                <p className="text-3xl font-bold">{item.value}</p>
+              </motion.div>
+            ))}
+          </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {chartData.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="p-4 rounded-lg shadow text-white text-center"
-              style={{ backgroundColor: item.color }}
+          {/* Charts Section - matching admin layout */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Asset Distribution Chart */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200"
             >
-              <h3 className="text-lg font-medium">{item.name}</h3>
-              <p className="text-2xl font-semibold">{item.value}</p>
+              <div className="p-4 border-b" style={{ backgroundColor: colors.accent, borderColor: colors.primary }}>
+                <h3 className="text-xl font-semibold" style={{ color: colors.darkNavy }}>Asset Overview</h3>
+              </div>
+              <div className="p-6 bg-white">
+                <div className="w-full h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie 
+                        data={chartData} 
+                        dataKey="value" 
+                        outerRadius={80} 
+                        label
+                        animationDuration={1000}
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ 
+                          borderRadius: '4px', 
+                          backgroundColor: "#fff",
+                          borderColor: colors.secondary
+                        }} 
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </motion.div>
-          ))}
-        </div>
 
-        {/* Charts Section */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Asset Distribution */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
+            {/* Request Status Chart */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200"
+            >
+              <div className="p-4 border-b" style={{ backgroundColor: colors.accent, borderColor: colors.primary }}>
+                <h3 className="text-xl font-semibold" style={{ color: colors.darkNavy }}>Request Status</h3>
+              </div>
+              <div className="p-6 bg-white">
+                <div className="w-full h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <XAxis dataKey="name" tick={{ fill: colors.darkNavy }} />
+                      <YAxis tick={{ fill: colors.darkNavy }} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          borderRadius: '4px', 
+                          backgroundColor: "#fff",
+                          borderColor: colors.secondary
+                        }}
+                      />
+                      <Legend />
+                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Recent Activity Table - matching admin style */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mt-12 bg-white rounded-lg shadow-md overflow-hidden border border-gray-200"
           >
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Your Asset Overview</h3>
-            <div className="w-full h-60 bg-gray-50 p-4 rounded-lg">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={chartData} dataKey="value" outerRadius={80} label>
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="p-4 border-b" style={{ backgroundColor: colors.accent, borderColor: colors.primary }}>
+              <h3 className="text-xl font-semibold" style={{ color: colors.darkNavy }}>Recent Activity</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ backgroundColor: colors.primary }} className="text-white text-left">
+                    <th className="p-4">Date</th>
+                    <th className="p-4">Time</th>
+                    <th className="p-4">Action</th>
+                    <th className="p-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentActivity && recentActivity.length > 0 ? (
+                    recentActivity.map((activity, idx) => (
+                      <tr 
+                        key={idx} 
+                        className="border-b border-gray-200 hover:bg-gray-50 transition"
+                        style={{ backgroundColor: idx % 2 === 0 ? "#f8f9fa" : "#ffffff" }}
+                      >
+                        <td className="p-4">{new Date(activity.date).toLocaleDateString()}</td>
+                        <td className="p-4">{new Date(activity.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                        <td className="p-4">{activity.action}</td>
+                        <td className="p-4">
+                          <StatusBadge status={activity.status} />
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="p-4 text-center text-gray-500">No recent activity found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* View more link - styled to match admin design */}
+            <div className="p-4 text-right border-t" style={{ borderColor: "#f0f0f0" }}>
+              <button className="text-sm font-medium hover:underline" style={{ color: colors.primary }}>
+                View All Activity
+              </button>
             </div>
           </motion.div>
           
-          {/* Request Breakdown */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <h3 className="text-xl font-medium mb-3 text-gray-800">Request Status</h3>
-            <div className="w-full h-60 bg-gray-50 p-4 rounded-lg">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="value">
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Recent Activity Table */}
-        <motion.div 
-          className="mt-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <h3 className="text-xl font-medium mb-3 text-gray-800">Recent Activity</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-[#3A6D8C] text-white">
-                  <th className="p-3 border">Date</th>
-                  <th className="p-3 border">Time</th>
-                  <th className="p-3 border">Action</th>
-                  <th className="p-3 border">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentActivity && recentActivity.length > 0 ? (
-                  recentActivity.map((activity, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="p-3 border">{new Date(activity.date).toLocaleDateString()}</td>
-                      <td className="p-3 border">{new Date(activity.date).toLocaleTimeString()}</td>
-                      <td className="p-3 border">{activity.action}</td>
-                      <td className="p-3 border">{activity.status}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr className="text-center">
-                    <td colSpan="4" className="p-3 border">No recent activity found</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          {/* Footer */}
+          <div className="mt-8 py-4 border-t text-center" style={{ borderColor: "#f0f0f0" }}>
+            <p className="text-sm text-gray-500">
+              © 2025 Asset Management System • Last updated: Apr 2, 2025
+            </p>
           </div>
-        </motion.div>
-
+        </div>
       </motion.div>
     </div>
   );
