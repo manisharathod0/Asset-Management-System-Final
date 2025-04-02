@@ -53,7 +53,6 @@ const ScheduledMaintenance = () => {
         setLoading(true);
         setError(null);
     
-        // Frontend validation: Check all fields
         if (!formData.assetId || !formData.date || !formData.technician || !formData.task) {
             setError("All fields are required.");
             setLoading(false);
@@ -73,7 +72,6 @@ const ScheduledMaintenance = () => {
             );
             console.log("Server Response:", response.data);
     
-            // Display confirmation prompt
             const confirmed = window.confirm("Asset scheduled successfully. Do you want to proceed?");
     
             if (confirmed) {
@@ -81,29 +79,28 @@ const ScheduledMaintenance = () => {
             }
     
         } catch (err) {
-            // ... (error handling)
+            setError("Failed to schedule maintenance.");
         } finally {
             setLoading(false);
         }
     };
 
-
-
-
     return (
-        <div className="min-h-screen bg-gray-100 pt-30 px-4">
-            <div className="max-w-2xl mx-auto bg-white p-6 shadow-lg rounded-2xl">
-                <h2 className="text-2xl font-bold mb-4">Schedule Maintenance</h2>
-                {error && <p className="text-red-500">{error}</p>}
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center p-6 mt-5">
+            <div className="max-w-lg w-full bg-white bg-opacity-90 backdrop-blur-md p-8 shadow-xl rounded-xl border border-gray-300">
+                <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Schedule Maintenance</h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                {error && <p className="text-red-500 font-medium text-center mb-4">{error}</p>}
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Asset Selection */}
                     <div>
-                        <label className="block text-sm font-medium">Asset ID & Name</label>
+                        <label className="block text-gray-700 font-semibold mb-1">Asset ID & Name</label>
                         <select
                             name="asset"
                             value={formData.assetId}
                             onChange={handleChange}
-                            className="w-full border p-2 rounded"
+                            className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 transition"
                         >
                             <option value="">Select an Asset</option>
                             {assetsLoading ? (
@@ -117,38 +114,50 @@ const ScheduledMaintenance = () => {
                             )}
                         </select>
                     </div>
+
+                    {/* Date Input */}
                     <div>
-                        <label className="block text-sm font-medium">Maintenance Date</label>
+                        <label className="block text-gray-700 font-semibold mb-1">Maintenance Date</label>
                         <input
                             type="date"
                             name="date"
                             value={formData.date}
                             onChange={handleChange}
-                            className="w-full border p-2 rounded"
+                            className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 transition"
                         />
                     </div>
+
+                    {/* Technician Name */}
                     <div>
-                        <label className="block text-sm font-medium">Technician Name</label>
+                        <label className="block text-gray-700 font-semibold mb-1">Technician Name</label>
                         <input
                             type="text"
                             name="technician"
                             value={formData.technician}
                             onChange={handleChange}
-                            className="w-full border p-2 rounded"
+                            placeholder="Enter technician name"
+                            className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 transition"
                         />
                     </div>
+
+                    {/* Description */}
                     <div>
-                        <label className="block text-sm font-medium">Description</label>
+                        <label className="block text-gray-700 font-semibold mb-1">Description</label>
                         <textarea
                             name="task"
                             value={formData.task}
                             onChange={handleChange}
-                            className="w-full border p-2 rounded"
+                            placeholder="Describe the maintenance task"
+                            className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 transition"
                         />
                     </div>
+
+                    {/* Submit Button */}
                     <button
                         type="submit"
-                        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+                        className={`w-full py-3 rounded-lg text-white font-semibold transition ${
+                            loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#001F3F] hover:bg-blue-600 shadow-md"
+                        }`}
                         disabled={loading || !formData.assetId || !formData.date}
                     >
                         {loading ? "Scheduling..." : "Schedule Maintenance"}
