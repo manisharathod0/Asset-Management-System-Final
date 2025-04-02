@@ -102,31 +102,42 @@ const EmployeeDashboard = () => {
   };
 
   // Fetch recent activity
-  const fetchRecentActivity = async () => {
-    const token = getToken();
+ // Fetch recent activity - updated to use the asset-requests endpoint
+const fetchRecentActivity = async () => {
+  const token = getToken();
+  
+  if (!token) {
+    return; // Already handled in fetchAssets
+  }
+  
+  try {
+    // Update the endpoint to match your backend route
+    const response = await fetch("http://localhost:5000/api/assetrequests", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
     
-    if (!token) {
-      return; // Already handled in fetchAssets
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch activity");
     }
     
-    try {
-      const response = await fetch("http://localhost:5000/api/activity/recent", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch activity");
-      }
-      
-      const data = await response.json();
-      setRecentActivity(data);
-    } catch (error) {
-      console.error("Error fetching activity:", error);
-      // Not setting error here to avoid blocking the dashboard if only this fails
-    }
-  };
+    const data = await response.json();
+    
+    // Transform the data to match your activity format if needed
+    const formattedActivity = data.map(request => ({
+      date: request.date, // assuming this is a date string from your backend
+      action: `Requested ${request.assetName} (${request.category})`,
+      status: request.status,
+      reason: request.reason
+    }));
+    
+    setRecentActivity(formattedActivity);
+  } catch (error) {
+    console.error("Error fetching activity:", error);
+    // Not setting error here to avoid blocking the dashboard if only this fails
+  }
+};
 
   // Load all data when component mounts
   useEffect(() => {
@@ -361,27 +372,27 @@ const EmployeeDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentActivity && recentActivity.length > 0 ? (
-                    recentActivity.map((activity, idx) => (
-                      <tr 
-                        key={idx} 
-                        className="border-b border-gray-200 hover:bg-gray-50 transition"
-                        style={{ backgroundColor: idx % 2 === 0 ? "#f8f9fa" : "#ffffff" }}
-                      >
-                        <td className="p-4">{new Date(activity.date).toLocaleDateString()}</td>
-                        <td className="p-4">{new Date(activity.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                        <td className="p-4">{activity.action}</td>
-                        <td className="p-4">
-                          <StatusBadge status={activity.status} />
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="4" className="p-4 text-center text-gray-500">No recent activity found</td>
-                    </tr>
-                  )}
-                </tbody>
+  {recentActivity && recentActivity.length > 0 ? (
+    recentActivity.map((activity, idx) => (
+      <tr 
+        key={idx} 
+        className="border-b border-gray-200 hover:bg-gray-50 transition"
+        style={{ backgroundColor: idx % 2 === 0 ? "#f8f9fa" : "#ffffff" }}
+      >
+        <td className="p-4">{new Date(activity.date).toLocaleDateString()}</td>
+        <td className="p-4">{new Date(activity.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+        <td className="p-4">{activity.action}</td>
+        <td className="p-4">
+          <StatusBadge status={activity.status} />
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="4" className="p-4 text-center text-gray-500">No recent activity found</td>
+    </tr>
+  )}
+</tbody>
               </table>
             </div>
             
