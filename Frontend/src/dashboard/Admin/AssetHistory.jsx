@@ -25,17 +25,20 @@ const AssetHistory = () => {
     }
   };
 
-  // Fixed filtering logic to correctly filter by action and asset name
+  // Updated filtering logic: compare action in a case-insensitive manner
   const filteredHistory = history
     .filter((entry) => {
-      // Check if asset exists before accessing its properties
-      const assetNameMatch = entry.asset && entry.asset.name 
-        ? entry.asset.name.toLowerCase().includes(search.toLowerCase()) 
-        : search === ""; // If no asset or name, only include in results when search is empty
+      // Check asset name match
+      const assetNameMatch =
+        entry.asset && entry.asset.name
+          ? entry.asset.name.toLowerCase().includes(search.toLowerCase())
+          : search === "";
       
-      // Filter by action type
-      const actionMatch = filter === "All" || entry.action === filter;
-      
+      // Filter by action type (case-insensitive)
+      const actionMatch =
+        filter === "All" ||
+        (entry.action && entry.action.toLowerCase() === filter.toLowerCase());
+
       return assetNameMatch && actionMatch;
     })
     .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date, newest first
@@ -54,18 +57,31 @@ const AssetHistory = () => {
 
     if (exportFormat === "csv") {
       const data = [
-        ["Asset", "Action", "Status", "Date", "User", "Quantity", "Expiry Date", "Image Updated"],
-        ...filteredHistory.map(({ asset, action, date, user, quantityChange, expiryDateChange, imageChange }) => [
-          asset?.name || "N/A",
-          action || "N/A",
-          asset?.status || "N/A",
-          date ? new Date(date).toLocaleDateString() : "N/A",
-          user || "N/A",
-          quantityChange ? asset?.quantity || "N/A" : "N/A",
-          expiryDateChange ? (asset?.expiryDate ? formatDate(asset.expiryDate) : "N/A") : "N/A",
-          imageChange ? "Yes" : "No"
-        ])
-      ].map((e) => e.join(",")).join("\n");
+        [
+          "Asset",
+          "Action",
+          "Status",
+          "Date",
+          "User",
+          "Quantity",
+          "Expiry Date",
+          "Image Updated"
+        ],
+        ...filteredHistory.map(
+          ({ asset, action, date, user, quantityChange, expiryDateChange, imageChange }) => [
+            asset?.name || "N/A",
+            action || "N/A",
+            asset?.status || "N/A",
+            date ? new Date(date).toLocaleDateString() : "N/A",
+            user || "N/A",
+            quantityChange ? asset?.quantity || "N/A" : "N/A",
+            expiryDateChange ? (asset?.expiryDate ? formatDate(asset.expiryDate) : "N/A") : "N/A",
+            imageChange ? "Yes" : "No"
+          ]
+        )
+      ]
+        .map((e) => e.join(","))
+        .join("\n");
       const blob = new Blob([data], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -77,30 +93,36 @@ const AssetHistory = () => {
       const doc = new jsPDF();
       doc.text("Asset History", 14, 10);
       autoTable(doc, {
-        head: [["Asset", "Action", "Status", "Date", "User", "Quantity", "Expiry Date", "Image Updated"]],
-        body: filteredHistory.map(({ asset, action, date, user, quantityChange, expiryDateChange, imageChange }) => [
-          asset?.name || "N/A",
-          action || "N/A",
-          asset?.status || "N/A",
-          date ? new Date(date).toLocaleDateString() : "N/A",
-          user || "N/A",
-          quantityChange ? asset?.quantity || "N/A" : "N/A",
-          expiryDateChange ? (asset?.expiryDate ? formatDate(asset.expiryDate) : "N/A") : "N/A",
-          imageChange ? "Yes" : "No"
-        ]),
+        head: [
+          ["Asset", "Action", "Status", "Date", "User", "Quantity", "Expiry Date", "Image Updated"]
+        ],
+        body: filteredHistory.map(
+          ({ asset, action, date, user, quantityChange, expiryDateChange, imageChange }) => [
+            asset?.name || "N/A",
+            action || "N/A",
+            asset?.status || "N/A",
+            date ? new Date(date).toLocaleDateString() : "N/A",
+            user || "N/A",
+            quantityChange ? asset?.quantity || "N/A" : "N/A",
+            expiryDateChange ? (asset?.expiryDate ? formatDate(asset.expiryDate) : "N/A") : "N/A",
+            imageChange ? "Yes" : "No"
+          ]
+        ),
       });
       doc.save("asset_history.pdf");
     } else if (exportFormat === "excel") {
-      const data = filteredHistory.map(({ asset, action, date, user, quantityChange, expiryDateChange, imageChange }) => ({
-        Asset: asset?.name || "N/A",
-        Action: action || "N/A",
-        Status: asset?.status || "N/A",
-        Date: date ? new Date(date).toLocaleDateString() : "N/A",
-        User: user || "N/A",
-        Quantity: quantityChange ? asset?.quantity || "N/A" : "N/A",
-        "Expiry Date": expiryDateChange ? (asset?.expiryDate ? formatDate(asset.expiryDate) : "N/A") : "N/A",
-        "Image Updated": imageChange ? "Yes" : "No"
-      }));
+      const data = filteredHistory.map(
+        ({ asset, action, date, user, quantityChange, expiryDateChange, imageChange }) => ({
+          Asset: asset?.name || "N/A",
+          Action: action || "N/A",
+          Status: asset?.status || "N/A",
+          Date: date ? new Date(date).toLocaleDateString() : "N/A",
+          User: user || "N/A",
+          Quantity: quantityChange ? asset?.quantity || "N/A" : "N/A",
+          "Expiry Date": expiryDateChange ? (asset?.expiryDate ? formatDate(asset.expiryDate) : "N/A") : "N/A",
+          "Image Updated": imageChange ? "Yes" : "No",
+        })
+      );
       const ws = XLSX.utils.json_to_sheet(data);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Asset History");
@@ -109,14 +131,21 @@ const AssetHistory = () => {
   };
 
   const getActionColor = (action) => {
-    switch(action) {
-      case "Created": return "#4ade80"; // green
-      case "Updated": return "#f97316"; // orange
-      case "Deleted": return "#ef4444"; // red
-      case "Assigned": return "#3b82f6"; // blue
-      case "Returned": return "#6366f1"; // indigo
-      case "Under Maintenance": return "#a855f7"; // purple
-      default: return "#6b7280"; // gray
+    switch (action) {
+      case "Created":
+        return "#4ade80"; // green
+      case "Updated":
+        return "#f97316"; // orange
+      case "Deleted":
+        return "#ef4444"; // red
+      case "Assigned":
+        return "#3b82f6"; // blue
+      case "Returned":
+        return "#6366f1"; // indigo
+      case "Under Maintenance":
+        return "#a855f7"; // purple
+      default:
+        return "#6b7280"; // gray
     }
   };
 
@@ -192,7 +221,7 @@ const AssetHistory = () => {
         </div>
       </div>
       
-      {/* Debug info - can be removed in production */}
+      {/* Debug info */}
       {history.length > 0 && (
         <div className="mb-4 flex justify-between text-sm text-[#3A6D8C]">
           <div>Total records: {history.length}</div>
@@ -263,25 +292,34 @@ const AssetHistory = () => {
                   <td className="p-3 border-b border-[#6A9AB0]/10">
                     <span 
                       className={`px-2 py-1 rounded-full text-xs inline-block ${
-                        entry.asset?.status === 'Available' ? 'bg-green-100 text-green-800' : 
-                        entry.asset?.status === 'Assigned' ? 'bg-blue-100 text-blue-800' : 
-                        entry.asset?.status === 'Under Maintenance' ? 'bg-red-100 text-red-800' : 
-                        entry.asset?.status === 'Returned' ? 'bg-amber-100 text-amber-800' : 
-                        entry.asset?.status === 'Retired' ? 'bg-gray-100 text-gray-800' : 
-                        'bg-gray-100 text-gray-800'
+                        entry.asset?.status === 'Available'
+                          ? 'bg-green-100 text-green-800'
+                          : entry.asset?.status === 'Assigned'
+                          ? 'bg-blue-100 text-blue-800'
+                          : entry.asset?.status === 'Under Maintenance'
+                          ? 'bg-red-100 text-red-800'
+                          : entry.asset?.status === 'Returned'
+                          ? 'bg-amber-100 text-amber-800'
+                          : entry.asset?.status === 'Retired'
+                          ? 'bg-gray-100 text-gray-800'
+                          : 'bg-gray-100 text-gray-800'
                       }`}
                     >
                       {entry.asset?.status || "N/A"}
                     </span>
                   </td>
-                  <td className="p-3 border-b border-[#6A9AB0]/10 text-[#001F3F]">{entry.asset?.quantity || "N/A"}</td>
+                  <td className="p-3 border-b border-[#6A9AB0]/10 text-[#001F3F]">
+                    {entry.asset?.quantity || "N/A"}
+                  </td>
                   <td className="p-3 border-b border-[#6A9AB0]/10 text-[#001F3F]">
                     {entry.asset?.expiryDate ? formatDate(entry.asset.expiryDate) : "N/A"}
                   </td>
                   <td className="p-3 border-b border-[#6A9AB0]/10 text-[#001F3F]">
                     {entry.date ? new Date(entry.date).toLocaleDateString() : "N/A"}
                   </td>
-                  <td className="p-3 border-b border-[#6A9AB0]/10 text-[#3A6D8C]">{entry.user || "N/A"}</td>
+                  <td className="p-3 border-b border-[#6A9AB0]/10 text-[#3A6D8C]">
+                    {entry.user || "N/A"}
+                  </td>
                 </motion.tr>
               ))
             ) : (
