@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect } from "react";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
@@ -8,10 +10,12 @@ import { motion } from "framer-motion";
 const EmployeeDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     assignedAssets: 0,
+    totalAssetQuantity: 0,
     pendingRequests: 0,
     approvedRequests: 0,
     rejectedRequests: 0
   });
+  const [categoryData, setCategoryData] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -30,7 +34,7 @@ const EmployeeDashboard = () => {
     return user?.token;
   };
 
-  // Fetch assigned assets - only for count purposes now
+  // Fetch assigned assets - updated to include quantity
   const fetchAssets = async () => {
     const token = getToken();
     
@@ -52,14 +56,45 @@ const EmployeeDashboard = () => {
       
       const data = await response.json();
       
+      // Calculate total quantity of assigned assets
+      const totalQuantity = data.reduce((sum, asset) => sum + (asset.quantity || 1), 0);
+      
       // Update dashboard counter
       setDashboardData(prev => ({
         ...prev,
-        assignedAssets: data.length
+        assignedAssets: data.length,
+        totalAssetQuantity: totalQuantity
       }));
     } catch (error) {
       console.error("Error fetching assets:", error);
       setError(error.message);
+    }
+  };
+
+  // Fetch category data - new function
+  const fetchCategoryData = async () => {
+    const token = getToken();
+    
+    if (!token) {
+      return; // Already handled in fetchAssets
+    }
+    
+    try {
+      const response = await fetch("http://localhost:5000/api/dashboard/categories", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch category data");
+      }
+      
+      const data = await response.json();
+      setCategoryData(data);
+    } catch (error) {
+      console.error("Error fetching category data:", error);
+      // Not setting error here to avoid blocking the dashboard if only this fails
     }
   };
 
@@ -102,42 +137,42 @@ const EmployeeDashboard = () => {
   };
 
   // Fetch recent activity
- // Fetch recent activity - updated to use the asset-requests endpoint
-const fetchRecentActivity = async () => {
-  const token = getToken();
-  
-  if (!token) {
-    return; // Already handled in fetchAssets
-  }
-  
-  try {
-    // Update the endpoint to match your backend route
-    const response = await fetch("http://localhost:5000/api/assetrequests", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const fetchRecentActivity = async () => {
+    const token = getToken();
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to fetch activity");
+    if (!token) {
+      return; // Already handled in fetchAssets
     }
     
-    const data = await response.json();
-    
-    // Transform the data to match your activity format if needed
-    const formattedActivity = data.map(request => ({
-      date: request.date, // assuming this is a date string from your backend
-      action: `Requested ${request.assetName} (${request.category})`,
-      status: request.status,
-      reason: request.reason
-    }));
-    
-    setRecentActivity(formattedActivity);
-  } catch (error) {
-    console.error("Error fetching activity:", error);
-    // Not setting error here to avoid blocking the dashboard if only this fails
-  }
-};
+    try {
+      // Update the endpoint to match your backend route
+      const response = await fetch("http://localhost:5000/api/assetrequests", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch activity");
+      }
+      
+      const data = await response.json();
+      
+      // Transform the data to match your activity format if needed
+      const formattedActivity = data.map(request => ({
+        date: request.date, // assuming this is a date string from your backend
+        action: `Requested ${request.assetName} (${request.category})`,
+        status: request.status,
+        reason: request.reason,
+        quantity: request.quantity || 1
+      }));
+      
+      setRecentActivity(formattedActivity);
+    } catch (error) {
+      console.error("Error fetching activity:", error);
+      // Not setting error here to avoid blocking the dashboard if only this fails
+    }
+  };
 
   // Load all data when component mounts
   useEffect(() => {
@@ -147,7 +182,8 @@ const fetchRecentActivity = async () => {
         await Promise.all([
           fetchAssets(),
           fetchRequests(),
-          fetchRecentActivity()
+          fetchRecentActivity(),
+          fetchCategoryData()
         ]);
       } catch (error) {
         console.error("Dashboard loading error:", error);
@@ -170,7 +206,29 @@ const fetchRecentActivity = async () => {
     ];
   };
 
+  // Prepare category chart data
+  const prepareCategoryData = () => {
+    return categoryData.map((category, index) => {
+      // Create a color palette based on the number of categories
+      const categoryColors = [
+        colors.darkNavy, 
+        colors.primary, 
+        colors.secondary, 
+        colors.accent,
+        "#5D8CAE", "#83A9C9", "#B3CDE0", "#CCEBC5", "#A8DDB5"
+      ];
+      
+      return {
+        name: category.category,
+        count: category.count,
+        quantity: category.totalQuantity,
+        color: categoryColors[index % categoryColors.length]
+      };
+    });
+  };
+
   const chartData = prepareChartData();
+  const categoryChartData = prepareCategoryData();
 
   // Status badge component for consistent styling
   const StatusBadge = ({ status }) => {
@@ -258,8 +316,9 @@ const fetchRecentActivity = async () => {
             </p>
           </div>
 
-          {/* Stats Grid - matching admin style */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
+          {/* Stats Grid - updated to include quantity */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 mt-6">
+            {/* Original stats */}
             {chartData.map((item, index) => (
               <motion.div 
                 key={index} 
@@ -273,9 +332,21 @@ const fetchRecentActivity = async () => {
                 <p className="text-3xl font-bold">{item.value}</p>
               </motion.div>
             ))}
+            
+            {/* New Total Quantity Card */}
+            <motion.div 
+              whileHover={{ scale: 1.04, boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="p-6 rounded-xl text-white text-center shadow-lg relative overflow-hidden"
+              style={{ backgroundColor: "#4A90E2" }}
+            >
+              <div className="absolute top-0 right-0 w-12 h-12 bg-white opacity-10 rounded-full -translate-y-6 translate-x-6"></div>
+              <h3 className="text-lg font-semibold mb-1">Quantity</h3>
+              <p className="text-3xl font-bold">{dashboardData.totalAssetQuantity}</p>
+            </motion.div>
           </div>
 
-          {/* Charts Section - matching admin layout */}
+          {/* Charts Section - updated with category data */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Asset Distribution Chart */}
             <motion.div 
@@ -315,7 +386,7 @@ const fetchRecentActivity = async () => {
               </div>
             </motion.div>
 
-            {/* Request Status Chart */}
+            {/* Category Chart - New chart replacing Request Status chart */}
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -323,12 +394,12 @@ const fetchRecentActivity = async () => {
               className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200"
             >
               <div className="p-4 border-b" style={{ backgroundColor: colors.accent, borderColor: colors.primary }}>
-                <h3 className="text-xl font-semibold" style={{ color: colors.darkNavy }}>Request Status</h3>
+                <h3 className="text-xl font-semibold" style={{ color: colors.darkNavy }}>Category Breakdown</h3>
               </div>
               <div className="p-6 bg-white">
                 <div className="w-full h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData}>
+                    <BarChart data={categoryChartData}>
                       <XAxis dataKey="name" tick={{ fill: colors.darkNavy }} />
                       <YAxis tick={{ fill: colors.darkNavy }} />
                       <Tooltip 
@@ -339,11 +410,12 @@ const fetchRecentActivity = async () => {
                         }}
                       />
                       <Legend />
-                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                        {chartData.map((entry, index) => (
+                      <Bar name="Category Count" dataKey="count" radius={[4, 4, 0, 0]}>
+                        {categoryChartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Bar>
+                      <Bar name="Total Quantity" dataKey="quantity" radius={[4, 4, 0, 0]} fill={colors.accent} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -351,7 +423,7 @@ const fetchRecentActivity = async () => {
             </motion.div>
           </div>
 
-          {/* Recent Activity Table - matching admin style */}
+          {/* Recent Activity Table - updated to include quantity */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -368,31 +440,33 @@ const fetchRecentActivity = async () => {
                     <th className="p-4">Date</th>
                     <th className="p-4">Time</th>
                     <th className="p-4">Action</th>
+                    <th className="p-4">Quantity</th>
                     <th className="p-4">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-  {recentActivity && recentActivity.length > 0 ? (
-    recentActivity.map((activity, idx) => (
-      <tr 
-        key={idx} 
-        className="border-b border-gray-200 hover:bg-gray-50 transition"
-        style={{ backgroundColor: idx % 2 === 0 ? "#f8f9fa" : "#ffffff" }}
-      >
-        <td className="p-4">{new Date(activity.date).toLocaleDateString()}</td>
-        <td className="p-4">{new Date(activity.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-        <td className="p-4">{activity.action}</td>
-        <td className="p-4">
-          <StatusBadge status={activity.status} />
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="4" className="p-4 text-center text-gray-500">No recent activity found</td>
-    </tr>
-  )}
-</tbody>
+                  {recentActivity && recentActivity.length > 0 ? (
+                    recentActivity.map((activity, idx) => (
+                      <tr 
+                        key={idx} 
+                        className="border-b border-gray-200 hover:bg-gray-50 transition"
+                        style={{ backgroundColor: idx % 2 === 0 ? "#f8f9fa" : "#ffffff" }}
+                      >
+                        <td className="p-4">{new Date(activity.date).toLocaleDateString()}</td>
+                        <td className="p-4">{new Date(activity.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                        <td className="p-4">{activity.action}</td>
+                        <td className="p-4">{activity.quantity || 1}</td>
+                        <td className="p-4">
+                          <StatusBadge status={activity.status} />
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="p-4 text-center text-gray-500">No recent activity found</td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
             
@@ -407,7 +481,7 @@ const fetchRecentActivity = async () => {
           {/* Footer */}
           <div className="mt-8 py-4 border-t text-center" style={{ borderColor: "#f0f0f0" }}>
             <p className="text-sm text-gray-500">
-              © 2025 Asset Management System • Last updated: Apr 2, 2025
+              © 2025 Asset Management System • Last updated: Apr 3, 2025
             </p>
           </div>
         </div>
