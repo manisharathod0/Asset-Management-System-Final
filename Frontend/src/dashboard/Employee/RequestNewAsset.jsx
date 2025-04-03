@@ -42,7 +42,6 @@ const SelectField = ({ label, value, onChange, options, placeholder, isAsset = f
 const RequestNewAsset = () => {
   const [formData, setFormData] = useState({
     assetId: "",
-    category: "",
     reason: "",
   });
   const [availableAssets, setAvailableAssets] = useState([]);
@@ -115,20 +114,14 @@ const RequestNewAsset = () => {
     setSelectedAsset(selectedValue);
     
     if (selectedValue) {
-      const asset = availableAssets.find(asset => asset._id === selectedValue);
-      if (asset) {
-        // Update category based on the selected asset
-        setFormData(prev => ({
-          ...prev,
-          assetId: selectedValue,
-          category: asset.category || ""
-        }));
-      }
+      setFormData(prev => ({
+        ...prev,
+        assetId: selectedValue
+      }));
     } else {
       setFormData(prev => ({
         ...prev,
-        assetId: "",
-        category: ""
+        assetId: ""
       }));
     }
   };
@@ -163,7 +156,6 @@ const RequestNewAsset = () => {
       // Clear the form after submission
       setFormData({
         assetId: "",
-        category: "",
         reason: "",
       });
       setSelectedAsset("");
@@ -361,39 +353,6 @@ const RequestNewAsset = () => {
                 
                 <motion.div variants={itemVariants}>
                   <label className="block font-medium mb-2" style={{ color: theme.primary }}>
-                    Category
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      className="w-full p-3 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:border-transparent pl-4 pr-10 transition-all duration-200"
-                      style={{ 
-                        borderColor: '#6A9AB0', 
-                        backgroundColor: 'white',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                        focusRing: '#3A6D8C'
-                      }}
-                      required
-                    >
-                      <option value="">Select a category</option>
-                      <option value="Hardware">Hardware</option>
-                      <option value="Software">Software</option>
-                      <option value="Furniture">Furniture</option>
-                      <option value="Office Supplies">Office Supplies</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
-                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#3A6D8C">
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-                </motion.div>
-                
-                <motion.div variants={itemVariants}>
-                  <label className="block font-medium mb-2" style={{ color: theme.primary }}>
                     Reason for Request
                   </label>
                   <textarea 
@@ -406,7 +365,7 @@ const RequestNewAsset = () => {
                       backgroundColor: 'white',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                       focusRing: '#3A6D8C',
-                      minHeight: '120px'
+                      minHeight: '150px'
                     }}
                     placeholder="Explain why you need this asset"
                     required
