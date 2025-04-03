@@ -3,15 +3,14 @@ const AssetRequest = require("../models/RequestNewAsset");
 // Create a new asset request
 exports.createAssetRequest = async (req, res) => {
   try {
-    const { assetId, assetName, category, reason } = req.body;
+    const { assetId , category, reason } = req.body;
     
-    if (!assetId || !assetName || !category || !reason) {
+    if (!assetId || !category || !reason) {
       return res.status(400).json({ message: "All fields are required" });
     }
     
     const newRequest = new AssetRequest({
       assetId,
-      assetName,
       category,
       reason,
       status: "Pending",
