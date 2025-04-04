@@ -27,7 +27,7 @@ const ViewMyAsset = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/assign/my-assets", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assign/my-assets`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });

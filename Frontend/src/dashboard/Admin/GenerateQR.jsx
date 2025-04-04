@@ -13,7 +13,7 @@ const GenerateQR = () => {
   useEffect(() => {
     const fetchAssets = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/assets");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/assets`);
         setAssets(response.data);
       } catch (error) {
         console.error("Error fetching assets:", error);

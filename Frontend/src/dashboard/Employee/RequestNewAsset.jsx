@@ -31,7 +31,7 @@ const RequestNewAsset = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("http://localhost:5000/api/request-asset", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/request-asset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

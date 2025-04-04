@@ -196,7 +196,7 @@ const ScheduledMaintenance = () => {
         const fetchAssets = async () => {
             setAssetsLoading(true);
             try {
-                const response = await axios.get("http://localhost:5000/api/maintenance/pending");
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/maintenance/pending`);
                 console.log("Fetched assets:", response.data);
                 setAssets(response.data);
             } catch (err) {
@@ -237,7 +237,7 @@ const ScheduledMaintenance = () => {
         try {
             console.log("Data being sent:", formData);
             const response = await axios.post(
-                "http://localhost:5000/api/maintenance/scheduled-maintenance",
+                `${import.meta.env.VITE_BACKEND_URL}/api/maintenance/scheduled-maintenance`,
                 formData,
                 {
                     headers: {

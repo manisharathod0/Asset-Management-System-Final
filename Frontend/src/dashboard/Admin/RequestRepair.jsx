@@ -209,7 +209,7 @@ const RequestRepair = () => {
   useEffect(() => {
     const fetchScheduledMaintenance = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/maintenance/scheduled-maintenance");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/maintenance/scheduled-maintenance`);
         setRepairLogs(response.data);
         setLoading(false);
       } catch (err) {
@@ -230,7 +230,7 @@ const RequestRepair = () => {
     if (!confirmed) return;
 
     try {
-      await axios.put(`http://localhost:5000/api/maintenance/scheduled-maintenance/${id}`, { status: "Completed" });
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/maintenance/scheduled-maintenance/${id}`, { status: "Completed" });
       setRepairLogs((prevLogs) =>
         prevLogs.map((log) => (log._id === id ? { ...log, status: "Completed" } : log))
       );
@@ -245,7 +245,7 @@ const RequestRepair = () => {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/maintenance/scheduled-maintenance/${id}`);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/maintenance/scheduled-maintenance/${id}`);
       setRepairLogs((prevLogs) => prevLogs.filter((log) => log._id !== id));
     } catch (err) {
       console.error("Error deleting maintenance:", err);

@@ -17,7 +17,7 @@ const AdminReturnAsset = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/users");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`);
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -35,7 +35,7 @@ const AdminReturnAsset = () => {
         return;
       }
       
-      const response = await axios.get("http://localhost:5000/api/return-logs", {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/return-logs`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setLogs(response.data);
@@ -59,7 +59,7 @@ const AdminReturnAsset = () => {
       }
       
       const response = await axios.patch(
-        `http://localhost:5000/api/return-logs/${logId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/return-logs/${logId}`,
         { 
           status,
           processedBy: user.name || user.email,

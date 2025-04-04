@@ -28,7 +28,7 @@ const AllAssets = () => {
 
   const fetchAssets = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/assets");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/assets`);
       console.log("API Response:", response.data);
       if (Array.isArray(response.data)) {
         setAssets(response.data);
@@ -46,7 +46,7 @@ const AllAssets = () => {
       ...asset,
       newImage: null
     });
-    setImagePreview(asset.image ? `http://localhost:5000/uploads/${asset.image}` : null);
+    setImagePreview(asset.image ? `${import.meta.env.VITE_BACKEND_URL}/uploads/${asset.image}` : null);
     setModalOpen(true);
   };
 
@@ -114,7 +114,7 @@ const AllAssets = () => {
       }
 
       await axios.put(
-        `http://localhost:5000/api/assets/${editingAsset._id}`, 
+        `${import.meta.env.VITE_BACKEND_URL}/api/assets/${editingAsset._id}`, 
         formData,
         {
           headers: {
@@ -150,7 +150,7 @@ const AllAssets = () => {
   const handleExport = async (format) => {
     try {
       // Using axios to get the file in the specified format
-      const response = await axios.get(`http://localhost:5000/api/assets/export/${format}`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/assets/export/${format}`, {
         responseType: 'blob', // Important for handling file downloads
       });
       
@@ -294,7 +294,7 @@ const AllAssets = () => {
                     {asset.image ? (
                       <div className="w-17 h-16 mx-auto">
                         <img 
-                          src={`http://localhost:5000/uploads/${asset.image}`} 
+                          src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${asset.image}`} 
                           alt={asset.name}
                           className="w-full h-full object-contain"
                         />

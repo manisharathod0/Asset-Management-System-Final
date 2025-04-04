@@ -44,7 +44,7 @@ const EmployeeDashboard = () => {
     }
     
     try {
-      const response = await fetch("http://localhost:5000/api/assign/my-assets", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assign/my-assets`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -80,7 +80,7 @@ const EmployeeDashboard = () => {
     }
     
     try {
-      const response = await fetch("http://localhost:5000/api/dashboard/categories", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/categories`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -107,7 +107,7 @@ const EmployeeDashboard = () => {
     }
     
     try {
-      const response = await fetch("http://localhost:5000/api/request-asset", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/request-asset`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -146,7 +146,7 @@ const EmployeeDashboard = () => {
     
     try {
       // Update the endpoint to match your backend route
-      const response = await fetch("http://localhost:5000/api/assetrequests", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assetrequests`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });

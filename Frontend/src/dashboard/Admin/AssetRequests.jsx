@@ -38,7 +38,7 @@ const AssetRequests = () => {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/api/assetrequests");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/assetrequests`);
       setRequests(response.data);
       setError(null);
     } catch (error) {
@@ -51,7 +51,7 @@ const AssetRequests = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/assetrequests/${id}`, { status: newStatus });
+      await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/assetrequests/${id}`, { status: newStatus });
       setRequests(requests.map((req) => (req._id === id ? { ...req, status: newStatus } : req)));
     } catch (error) {
       console.error("Error updating request status:", error);

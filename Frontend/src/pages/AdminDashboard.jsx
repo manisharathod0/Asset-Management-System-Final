@@ -27,7 +27,7 @@ const AdminDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         // Fetch stats for the primary metrics
-        const statsRes = await fetch("http://localhost:5000/api/dashboard/stats");
+        const statsRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/stats`);
         const statsData = await statsRes.json();
         
         // Add total quantity to the stats data
@@ -40,11 +40,11 @@ const AdminDashboard = () => {
         ]);
 
         // Fetch asset category data with quantities
-        const categoriesRes = await fetch("http://localhost:5000/api/dashboard/categories");
+        const categoriesRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/categories`);
         const categoriesData = await categoriesRes.json();
         setCategoryStats(categoriesData);
 
-        const activityRes = await fetch("http://localhost:5000/api/dashboard/activity");
+        const activityRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/activity`);
         const activityData = await activityRes.json();
         setActivity(activityData);
       } catch (err) {

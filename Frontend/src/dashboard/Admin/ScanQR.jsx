@@ -75,7 +75,7 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
       const token = parsedUser?.token;
       if (!token) throw new Error("No authentication token found!");
   
-      const response = await fetch("http://localhost:5000/api/scanned-data", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/scanned-data`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

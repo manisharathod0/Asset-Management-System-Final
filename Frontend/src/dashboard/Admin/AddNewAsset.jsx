@@ -89,7 +89,7 @@ const AddNewAsset = () => {
         formData.append("image", asset.image);
       }
 
-      const response = await axios.post("http://localhost:5000/api/assets", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/assets`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }

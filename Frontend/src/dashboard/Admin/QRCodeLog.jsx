@@ -45,7 +45,7 @@ const QRCodeLog = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/api/logs", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/logs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -40,7 +40,7 @@ const ReturnRequest = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/assign/my-assets", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assign/my-assets`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -67,7 +67,7 @@ const ReturnRequest = () => {
     }
 
     try {
-      const response = await axios.get("http://localhost:5000/api/return-logs/my-returns", {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/return-logs/my-returns`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setReturnRequests(response.data);
@@ -116,7 +116,7 @@ const ReturnRequest = () => {
       
       // Send request to backend
       const response = await axios.post(
-        "http://localhost:5000/api/return-logs", 
+       `${import.meta.env.VITE_BACKEND_URL}/api/return-logs`, 
         returnData,
         {
           headers: { Authorization: `Bearer ${token}` }

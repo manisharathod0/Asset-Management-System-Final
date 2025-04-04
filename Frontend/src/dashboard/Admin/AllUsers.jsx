@@ -3,7 +3,7 @@ import { FaUserEdit, FaUserMinus, FaUsers, FaSearch } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/users"; // Change this as per your backend route
+const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api/users`; // Change this as per your backend route
 
 const AllUsers = () => {
   const [search, setSearch] = useState("");

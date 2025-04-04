@@ -69,8 +69,8 @@ const AssignAsset = () => {
   const fetchAssetsAndUsers = async () => {
     try {
       const [assetResponse, userResponse] = await Promise.all([
-        fetch("http://localhost:5000/api/assets"),
-        fetch("http://localhost:5000/api/users"),
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assets`),
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users`),
       ]);
 
       if (!assetResponse.ok || !userResponse.ok) {
@@ -110,7 +110,7 @@ const AssignAsset = () => {
     const newAssignment = { assetId: asset, userId: user, assignedDate, dueDate, note };
 
     try {
-      const response = await fetch("http://localhost:5000/api/assign/", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assign/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newAssignment),

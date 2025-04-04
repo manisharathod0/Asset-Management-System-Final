@@ -18,7 +18,7 @@ const AssetHistory = () => {
 
   const fetchHistory = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/assets/history");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/assets/history`);
       setHistory(response.data || []);
     } catch (error) {
       console.error("Error fetching history:", error);
@@ -266,7 +266,7 @@ const AssetHistory = () => {
                     {entry.asset?.image ? (
                       <div className="w-14 h-14 mx-auto rounded-md overflow-hidden shadow-sm border border-[#EAD8B1]/50">
                         <img 
-                          src={`http://localhost:5000/uploads/${entry.asset.image}`} 
+                          src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${entry.asset.image}`} 
                           alt={entry.asset.name}
                           className="w-full h-full object-contain bg-white"
                         />
