@@ -127,19 +127,28 @@ connectDB().catch(error => {
 // Create Express app
 const app = express();
 
-// UPDATED: Enable CORS for frontend requests - Allow multiple origins
+// CORS Configuration
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
-  process.env.FRONTEND_URL // Keep the environment variable too
+  'https://asset-management-system-final-944c-11kuf9p7l.vercel.app',
+  process.env.FRONTEND_URL
 ];
 
 app.use(cors({
-  origin: "https://asset-management-system-final-944c-11kuf9p7l.vercel.app", // your frontend domain
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
-
 
 // Ensure uploads directory exists with proper permissions
 const uploadDir = path.join(__dirname, "uploads");
