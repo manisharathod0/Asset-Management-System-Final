@@ -127,6 +127,20 @@ connectDB().catch(error => {
 // Create Express app
 const app = express();
 
+// UPDATED: Enable CORS for frontend requests - Allow multiple origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  process.env.FRONTEND_URL // Keep the environment variable too
+];
+
+app.use(cors({
+  origin: "https://asset-management-system-final-944c-11kuf9p7l.vercel.app", // your frontend domain
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
+
 // Ensure uploads directory exists with proper permissions
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -139,29 +153,25 @@ if (!fs.existsSync(uploadDir)) {
   }
 }
 
-// UPDATED: Enable CORS for frontend requests - Allow multiple origins
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  process.env.FRONTEND_URL // Keep the environment variable too
-];
 
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      console.log(`Origin ${origin} not allowed by CORS`);
-      callback(null, true); // Still allow for development - remove in production
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+//     if (allowedOrigins.includes(origin) || !origin) {
+//       callback(null, true);
+//     } else {
+//       console.log(`Origin ${origin} not allowed by CORS`);
+//       callback(null, true); // Still allow for development - remove in production
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
+
 
 // Middleware for parsing JSON and URL-encoded data
 app.use(express.json());
