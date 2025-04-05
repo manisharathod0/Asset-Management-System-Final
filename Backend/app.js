@@ -127,28 +127,42 @@ connectDB().catch(error => {
 // Create Express app
 const app = express();
 
-// CORS Configuration
+// Define allowed origins
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'https://asset-management-system-final-944c-11kuf9p7l.vercel.app',
-  process.env.FRONTEND_URL
+  // Add any other frontend URLs that need access
 ];
 
+// Apply CORS middleware with proper configuration
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests)
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`CORS not allowed for origin: ${origin}`));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+  optionsSuccessStatus: 204, // Some legacy browsers choke on 204
+  preflightContinue: false, // This is important for handling redirects in preflight
+  maxAge: 86400 // Cache preflight response for 24 hours
 }));
+
+app.options('*', cors());
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Asset Management API is running",
+    status: "online",
+    version: "1.0.0"
+  });
+});
 
 // Ensure uploads directory exists with proper permissions
 const uploadDir = path.join(__dirname, "uploads");
@@ -161,26 +175,6 @@ if (!fs.existsSync(uploadDir)) {
     console.error("Error creating uploads directory:", error);
   }
 }
-
-
-// app.use(cors({
-//   origin: function(origin, callback) {
-//     // Allow requests with no origin (like mobile apps or curl requests)
-//     if (!origin) return callback(null, true);
-    
-//     if (allowedOrigins.includes(origin) || !origin) {
-//       callback(null, true);
-//     } else {
-//       console.log(`Origin ${origin} not allowed by CORS`);
-//       callback(null, true); // Still allow for development - remove in production
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-
-
 
 // Middleware for parsing JSON and URL-encoded data
 app.use(express.json());

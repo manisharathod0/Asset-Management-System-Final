@@ -17,22 +17,28 @@ const LoginPage = () => {
     event.preventDefault();
     setLoading(true);
     setError("");
-
+  
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
+      // Ensure there's no double slash by properly joining URL parts
+      const baseUrl = import.meta.env.VITE_BACKEND_URL.endsWith('/')
+        ? import.meta.env.VITE_BACKEND_URL.slice(0, -1)
+        : import.meta.env.VITE_BACKEND_URL;
+        
+      const response = await fetch(`${baseUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Important for cookies/sessions
       });
-
+  
       const data = await response.json();
       console.log("Login Response:", data);
-
+  
       setLoading(false);
-
+  
       if (response.ok) {
         login(data.token, data.role);
-
+  
         switch (data.role.toLowerCase()) {
           case "admin":
             navigate("/admin/dashboard");
@@ -55,7 +61,6 @@ const LoginPage = () => {
       setError("Something went wrong. Please try again.");
     }
   };
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#EAD8B1] to-[#F5E9D0] px-4 py-25">
       <div className="w-full max-w-md">
