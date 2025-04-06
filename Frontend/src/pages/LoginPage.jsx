@@ -13,54 +13,40 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
+  // Example login function fix (implement in your login component)
+const handleLogin = async (e) => {
+  e.preventDefault(); // Prevent form submission
   
-    try {
-      // Ensure there's no double slash by properly joining URL parts
-      const baseUrl = import.meta.env.VITE_BACKEND_URL.endsWith('/')
-        ? import.meta.env.VITE_BACKEND_URL.slice(0, -1)
-        : import.meta.env.VITE_BACKEND_URL;
-        
-      const response = await fetch(`${baseUrl}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include", // Important for cookies/sessions
-      });
-  
-      const data = await response.json();
-      console.log("Login Response:", data);
-  
-      setLoading(false);
-  
-      if (response.ok) {
-        login(data.token, data.role);
-  
-        switch (data.role.toLowerCase()) {
-          case "admin":
-            navigate("/admin/dashboard");
-            break;
-          case "manager":
-            navigate("/manager/dashboard");
-            break;
-          case "employee":
-            navigate("/employee/dashboard");
-            break;
-          default:
-            setError(`Invalid role (${data.role}), please contact admin.`);
-        }
-      } else {
-        setError(data.message || "Login failed");
-      }
-    } catch (error) {
-      setLoading(false);
-      console.error("Error logging in:", error);
-      setError("Something went wrong. Please try again.");
+  try {
+    // Extract form values properly
+    const credentials = {
+      email: emailInputRef.current.value, // Adjust based on your actual ref names
+      password: passwordInputRef.current.value
+    };
+    
+    // Make the API call
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include credentials if using cookies
+      body: JSON.stringify(credentials)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Login failed');
     }
-  };
+    
+    const data = await response.json();
+    // Handle successful login (store token, redirect, etc.)
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    // Show error message to user
+  }
+};
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#EAD8B1] to-[#F5E9D0] px-4 py-25">
       <div className="w-full max-w-md">
