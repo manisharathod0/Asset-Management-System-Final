@@ -262,10 +262,12 @@ const RequestNewAsset = () => {
                 required
               >
                 <option value="">Select a category</option>
-                <option value="Hardware">Hardware</option>
+                <option value="Electronics">Electronics</option>
                 <option value="Software">Software</option>
                 <option value="Furniture">Furniture</option>
-                <option value="Office Supplies">Office Supplies</option>
+                <option value="Vehicles">Vehicles</option>
+                <option value="IT & Techology">IT & Techology</option>
+                <option value="Mobile Devices">Mobile Devices</option>
                 <option value="Other">Other</option>
               </motion.select>
             </motion.div>
