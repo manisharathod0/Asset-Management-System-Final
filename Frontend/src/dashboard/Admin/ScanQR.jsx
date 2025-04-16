@@ -36,6 +36,7 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
   
     reader.readAsDataURL(file);
   };
+  
   const parseScannedData = (text) => {
     try {
       if (text.startsWith("{") && text.endsWith("}")) {
@@ -63,7 +64,6 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
       return null;
     }
   };
-
 
   // Function to send scanned data to the backend
   const sendScannedDataToBackend = async (scannedData) => {
@@ -98,6 +98,7 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
       alert("Error saving scanned data: " + error.message);
     }
   };  
+  
   const formatScannedData = (data) => {
     return `📌 Asset Details
   --------------------------------
@@ -108,7 +109,6 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
   🚦 Status: ${data.status}`;
   };
   
-  
   // Reset state for scanning another QR code
   const handleScanAnother = () => {
     setScanResult(null);
@@ -116,9 +116,9 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-[#6A9AB0] p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+        <h2 className="text-2xl font-bold text-[#3A6D8C] text-center mb-6">
           Scan QR Code
         </h2>
 
@@ -128,7 +128,7 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
               type="file"
               accept="image/*"
               onChange={handleFileUpload}
-              className="w-full p-3 border border-gray-300 rounded-lg cursor-pointer bg-white text-gray-700 text-center"
+              className="w-full p-3 border border-[#6A9AB0] rounded-lg cursor-pointer bg-white text-[#001F3F] text-center"
             />
             <div id="reader" className="hidden"></div>
             {errorMessage && (
@@ -138,13 +138,13 @@ const ScanQR = ({ onScanSuccess, onScanError }) => {
             )}
           </>
         ) : (
-          <div className="mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-left">
+          <div className="mt-6 p-4 bg-[#EAD8B1] border border-[#6A9AB0] text-[#001F3F] rounded-lg text-left">
             <pre className="text-lg font-medium break-words whitespace-pre-wrap">
               {scanResult}
             </pre>
             <button
               onClick={handleScanAnother}
-              className="mt-4 px-4 ml-20 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
+              className="mt-4 px-4 ml-20 py-2 bg-[#3A6D8C] text-white rounded-lg shadow-md hover:bg-[#6A9AB0] transition"
             >
               Scan Another QR Code
             </button>

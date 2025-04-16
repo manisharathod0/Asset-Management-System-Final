@@ -116,7 +116,7 @@ const ScanQRCode = ({ onScanSuccess, onScanError }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-[#6A9AB0] p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Scan QR Code
