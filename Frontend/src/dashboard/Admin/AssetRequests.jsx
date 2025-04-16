@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -64,6 +65,12 @@ const AssetRequests = () => {
     return date.toLocaleDateString();
   };
 
+  // Function to format Asset ID
+  const formatAssetId = (id) => {
+    if (!id) return "N/A";
+    return `AST-${id.slice(-6).toUpperCase()}`;
+  };
+
   const filteredRequests = requests.filter(
     (req) =>
       (filter === "All" || req.status === filter) &&
@@ -79,7 +86,7 @@ const AssetRequests = () => {
     }
 
     const exportData = filteredRequests.map(req => ({
-      'Asset ID': req.assetId,
+      'Asset ID': formatAssetId(req.assetId), // Format the Asset ID for exports as well
       'Asset Name': req.assetName,
       'Category': req.category,
       'Requested By': req.requestedBy || 'Employee',
@@ -307,7 +314,7 @@ const AssetRequests = () => {
                   <td className="p-4 border-t border-gray-200">
                     <div className="flex items-center">
                       <FaTag className="text-blue-500 mr-2" />
-                      {req.assetId}
+                      {formatAssetId(req.assetId)}  {/* Using formatted Asset ID here */}
                     </div>
                   </td>
                   <td className="p-4 border-t border-gray-200 font-medium">{req.assetName}</td>

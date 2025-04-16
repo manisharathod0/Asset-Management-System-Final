@@ -1,5 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { QRCodeCanvas } from "qrcode.react";
 
 const ViewMyAsset = () => {
   const [assets, setAssets] = useState([]);
@@ -79,6 +81,38 @@ const ViewMyAsset = () => {
     }
   };
 
+  // Download QR Code function
+  const downloadQRCode = (assetId) => {
+    const qrCodeContainer = document.getElementById(`qr-${assetId}`);
+    
+    if (!qrCodeContainer) {
+      console.error("QR Code container not found!");
+      return;
+    }
+  
+    const qrCanvas = qrCodeContainer.querySelector('canvas');
+    
+    if (!qrCanvas) {
+      console.error("QR Code canvas not found!");
+      return;
+    }
+  
+    try {
+      const url = qrCanvas.toDataURL("image/png");
+      
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `qrcode-${assetId}.png`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading QR code:", error);
+      alert("Failed to download QR code. Please try again.");
+    }
+  };
+
   // Filter assets by search term
   const filteredAssets = assets.filter(asset => 
     asset.asset?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,9 +177,29 @@ const ViewMyAsset = () => {
                 <span className="text-gray-600">Assigned:</span>
                 <span className="font-medium">{formatDate(asset.assignedDate)}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="mb-3 flex justify-between">
                 <span className="text-gray-600">Due Date:</span>
                 <span className="font-medium">{formatDate(asset.dueDate)}</span>
+              </div>
+              <div className="flex flex-col items-center mt-3 pt-3 border-t" style={{ borderColor: "#D1D5DB" }}>
+                <div id={`qr-${asset.asset?._id}`} className="bg-white p-2 rounded-lg shadow-sm mb-2">
+                  <QRCodeCanvas
+                    value={JSON.stringify({
+                      id: asset.asset?._id,
+                      name: asset.asset?.name,
+                      category: asset.asset?.category,
+                      status: asset.asset?.status,
+                    })}
+                    size={100}
+                  />
+                </div>
+                <button
+                  onClick={() => downloadQRCode(asset.asset?._id)}
+                  className="mt-2 text-white px-3 py-1 rounded-full text-xs hover:shadow-md transition-all duration-300"
+                  style={{ backgroundColor: colors.oceanBlue }}
+                >
+                  Download QR Code
+                </button>
               </div>
             </div>
           </motion.div>
@@ -329,7 +383,7 @@ const ViewMyAsset = () => {
                                 </div>
                               </th>
                               <th 
-                                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer rounded-tr-lg"
+                                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer"
                                 style={{ color: colors.darkNavy }}
                                 onClick={() => requestSort('dueDate')}
                               >
@@ -341,6 +395,12 @@ const ViewMyAsset = () => {
                                     </span>
                                   )}
                                 </div>
+                              </th>
+                              <th 
+                                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-tr-lg"
+                                style={{ color: colors.darkNavy }}
+                              >
+                                QR Code
                               </th>
                             </tr>
                           </thead>
@@ -377,6 +437,28 @@ const ViewMyAsset = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                   {formatDate(asset.dueDate)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div id={`qr-${asset.asset?._id}`} className="flex flex-col items-center">
+                                    <div className="p-1 bg-white rounded-lg shadow-sm">
+                                      <QRCodeCanvas
+                                        value={JSON.stringify({
+                                          id: asset.asset?._id,
+                                          name: asset.asset?.name,
+                                          category: asset.asset?.category,
+                                          status: asset.asset?.status,
+                                        })}
+                                        size={60}
+                                      />
+                                    </div>
+                                    <button
+                                      onClick={() => downloadQRCode(asset.asset?._id)}
+                                      className="mt-2 text-white px-2 py-1 rounded-full text-xs hover:shadow-md transition-all duration-300"
+                                      style={{ backgroundColor: colors.skyBlue }}
+                                    >
+                                      Download QR
+                                    </button>
+                                  </div>
                                 </td>
                               </motion.tr>
                             ))}

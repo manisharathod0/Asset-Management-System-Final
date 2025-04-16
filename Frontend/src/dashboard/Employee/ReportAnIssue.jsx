@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const ReportAnIssue = () => {
@@ -8,6 +9,10 @@ const ReportAnIssue = () => {
   const [issue, setIssue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [myAssets, setMyAssets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selectedAssetId, setSelectedAssetId] = useState("");
 
   // Color palette
   const colors = {
@@ -17,6 +22,110 @@ const ReportAnIssue = () => {
     sand: "#EAD8B1"
   };
 
+  useEffect(() => {
+    fetchMyAssets();
+  }, []);
+
+  const fetchMyAssets = async () => {
+    const user = JSON.parse(localStorage.getItem("user")); 
+    const token = user?.token;
+
+    if (!token) {
+      setError("Authentication token not found. Please login.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/assign/my-assets", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch assets");
+      }
+
+      const data = await response.json();
+      setMyAssets(data);
+    } catch (error) {
+      setError("Failed to load your assets: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAssetSelect = (e) => {
+    const selectedId = e.target.value;
+    setSelectedAssetId(selectedId);
+    
+    if (selectedId) {
+      const selectedAsset = myAssets.find(asset => asset._id === selectedId);
+      if (selectedAsset && selectedAsset.asset) {
+        setAssetName(selectedAsset.asset.name || "");
+        // Format the asset ID to be consistent (e.g., AST-12345)
+        const formattedId = selectedAsset.asset.assetId || 
+                          (selectedAsset.asset._id ? `AST-${selectedAsset.asset._id.slice(-5).toUpperCase()}` : "");
+        setAssetId(formattedId);
+        
+        // We'll still try to get category but user can change it from dropdown
+        if (selectedAsset.asset.category) {
+          setCategory(selectedAsset.asset.category);
+        } else if (selectedAsset.asset.type) {
+          setCategory(selectedAsset.asset.type);
+        } else {
+          // Make an additional request to get full asset details if needed
+          fetchAssetDetails(selectedAsset.asset._id);
+        }
+      }
+    } else {
+      setAssetName("");
+      setAssetId("");
+      setCategory("");
+    }
+  };
+
+  // Function to fetch complete asset details if needed
+  const fetchAssetDetails = async (assetId) => {
+    if (!assetId) return;
+    
+    const user = JSON.parse(localStorage.getItem("user")); 
+    const token = user?.token;
+
+    if (!token) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/assets/${assetId}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch asset details");
+      }
+
+      const assetData = await response.json();
+      
+      // Set category from the complete asset data
+      if (assetData.category) {
+        setCategory(assetData.category);
+      } else if (assetData.type) {
+        setCategory(assetData.type);
+      } else {
+        setCategory(""); // Empty so user can select
+      }
+      
+    } catch (error) {
+      console.error("Error fetching asset details:", error);
+      setCategory(""); // Default fallback
+    }
+  };
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -24,7 +133,10 @@ const ReportAnIssue = () => {
     try {
       const response = await fetch("http://localhost:5000/api/maintenance/report", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${JSON.parse(localStorage.getItem("user"))?.token}`
+        },
         body: JSON.stringify({
           assetName,
           assetId,
@@ -40,6 +152,7 @@ const ReportAnIssue = () => {
       setSubmitted(true);
       
       // Reset form fields
+      setSelectedAssetId("");
       setAssetName("");
       setAssetId("");
       setCategory("");
@@ -207,6 +320,41 @@ const ReportAnIssue = () => {
             initial="hidden"
             animate="visible"
           >
+            {/* Select Asset dropdown */}
+            <motion.div variants={itemVariants} className="md:col-span-2">
+              <label className={labelClasses} style={{ color: colors.darkBlue }}>
+                Select Your Asset
+              </label>
+              {loading ? (
+                <div className="flex items-center justify-center py-3">
+                  <svg className="animate-spin h-5 w-5" style={{ color: colors.mediumBlue }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              ) : error ? (
+                <div className="p-3 text-red-500 bg-red-50 rounded-xl border border-red-100">
+                  {error}
+                </div>
+              ) : (
+                <motion.select
+                  whileFocus={{ scale: 1.01 }}
+                  value={selectedAssetId}
+                  onChange={handleAssetSelect}
+                  className={`${inputClasses} cursor-pointer`}
+                  style={{ borderColor: colors.mediumBlue }}
+                  required
+                >
+                  <option value="">Select an asset</option>
+                  {myAssets.map(asset => (
+                    <option key={asset._id} value={asset._id}>
+                      {asset.asset?.name || "Unnamed Asset"} ({asset.asset?.assetId || `AST-${asset.asset?._id?.slice(-5).toUpperCase() || "N/A"}`})
+                    </option>
+                  ))}
+                </motion.select>
+              )}
+            </motion.div>
+            
             <motion.div variants={itemVariants} className="md:col-span-1">
               <label className={labelClasses} style={{ color: colors.darkBlue }}>
                 Asset Name
@@ -216,9 +364,10 @@ const ReportAnIssue = () => {
                 type="text"
                 value={assetName}
                 onChange={(e) => setAssetName(e.target.value)}
-                placeholder="Enter asset name"
+                placeholder="Asset name (auto-filled)"
                 className={inputClasses}
-                style={{ borderColor: colors.mediumBlue }}
+                style={{ borderColor: colors.mediumBlue, backgroundColor: "#f9f9f9" }}
+                readOnly
                 required
               />
             </motion.div>
@@ -232,34 +381,35 @@ const ReportAnIssue = () => {
                 type="text"
                 value={assetId}
                 onChange={(e) => setAssetId(e.target.value)}
-                placeholder="Enter asset ID"
+                placeholder="Asset ID (auto-filled)"
                 className={inputClasses}
-                style={{ borderColor: colors.mediumBlue }}
+                style={{ borderColor: colors.mediumBlue, backgroundColor: "#f9f9f9" }}
+                readOnly
                 required
               />
             </motion.div>
             
+            {/* Updated Category Selection */}
             <motion.div variants={itemVariants} className="md:col-span-2">
-              <label className={labelClasses} style={{ color: colors.darkBlue }}>
-                Category
-              </label>
-              <motion.select
-                whileFocus={{ scale: 1.01 }}
+              <label className={labelClasses} style={{ color: colors.darkBlue }}>Category</label>
+              <select
+                name="category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className={`${inputClasses} cursor-pointer`}
-                style={{ borderColor: colors.mediumBlue }}
+                onChange={handleCategoryChange}
+                className={inputClasses}
+                style={{ 
+                  borderColor: colors.lightBlue,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                }}
                 required
               >
-                <option value="">Select issue category</option>
-                <option value="Electrical">Electrical</option>
-                <option value="Mechanical">Mechanical</option>
-                <option value="Software">Software</option>
-                <option value="Hardware">Hardware</option>
-                <option value="Network">Network</option>
-                <option value="Safety">Safety Hazard</option>
-                <option value="Other">Other</option>
-              </motion.select>
+              <option value="">Select a category...</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="Mobile Devices">Mobile Devices</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Electronics">Electronics</option>
+                <option value="IT & Technology">IT & Technology</option>
+              </select>
             </motion.div>
             
             <motion.div variants={itemVariants} className="md:col-span-2">

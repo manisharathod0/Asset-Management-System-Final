@@ -1,5 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+
+const SelectField = ({ label, value, onChange, options, placeholder, isAsset = false }) => (
+  <div className="mb-4">
+    <label className="block text-sm font-medium mb-1 text-gray-700" style={{ color: '#001F3F' }}>{label}</label>
+    <div className="relative">
+      <select 
+        value={value} 
+        onChange={onChange} 
+        className="w-full p-3 border rounded-xl appearance-none focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300 bg-white"
+        style={{ 
+          borderColor: '#6A9AB0', 
+          backgroundColor: 'white',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        }}
+        required
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option._id} value={option._id}>
+            {isAsset 
+              ? `AST-${option._id.slice(-6).toUpperCase()} - ${option.name} (${option.category})` 
+              : option.name}
+          </option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#3A6D8C">
+          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+      </div>
+    </div>
+  </div>
+);
 
 const RequestNewAsset = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +44,8 @@ const RequestNewAsset = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [assets, setAssets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Color palette
   const colors = {
@@ -20,9 +55,58 @@ const RequestNewAsset = () => {
     sand: "#EAD8B1"
   };
 
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/assets");
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch assets. Please try again.");
+        }
+        
+        const assetData = await response.json();
+        const availableAssets = assetData.filter((item) => item.status === "Available");
+        
+        setAssets(availableAssets);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching assets:", error);
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+    
+    fetchAssets();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleAssetSelect = (e) => {
+    const assetId = e.target.value;
+    
+    if (assetId) {
+      const selectedAsset = assets.find(asset => asset._id === assetId);
+      
+      if (selectedAsset) {
+        setFormData(prevData => ({
+          ...prevData,
+          assetId: selectedAsset._id,
+          assetName: selectedAsset.name,
+          // Removed the category auto-fill
+        }));
+      }
+    } else {
+      // Reset only assetId and assetName fields
+      setFormData(prevData => ({
+        ...prevData,
+        assetId: "",
+        assetName: "",
+        // Keep category as is
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -203,103 +287,96 @@ const RequestNewAsset = () => {
               style={{ backgroundColor: colors.mediumBlue, color: 'white' }}
               className="px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-300 hover:shadow-lg"
             >
-              Request Another Asset
+              Submit Another Request
             </motion.button>
           </motion.div>
         ) : (
           <motion.form 
-            onSubmit={handleSubmit} 
-            className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-5"
+            onSubmit={handleSubmit}
+            className="relative z-10"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
-            <motion.div variants={itemVariants} className="md:col-span-1">
-              <label className={labelClasses} style={{ color: colors.darkBlue }}>
-                Asset ID
-              </label>
-              <motion.input
-                whileFocus={{ scale: 1.01 }}
-                type="text"
-                name="assetId"
+            {/* Asset Selection Field */}
+            <motion.div variants={itemVariants}>
+              <SelectField 
+                label="Select Asset"
                 value={formData.assetId}
-                onChange={handleChange}
-                placeholder="Enter asset ID"
-                className={inputClasses}
-                style={{ borderColor: colors.mediumBlue }}
-                required
+                onChange={handleAssetSelect}
+                options={assets}
+                placeholder="Choose an asset..."
+                isAsset={true}
               />
             </motion.div>
             
-            <motion.div variants={itemVariants} className="md:col-span-1">
-              <label className={labelClasses} style={{ color: colors.darkBlue }}>
-                Asset Name
-              </label>
-              <motion.input
-                whileFocus={{ scale: 1.01 }}
-                type="text"
-                name="assetName"
-                value={formData.assetName}
-                onChange={handleChange}
-                placeholder="Enter asset name"
-                className={inputClasses}
-                style={{ borderColor: colors.mediumBlue }}
-                required
-              />
-            </motion.div>
-            
-            <motion.div variants={itemVariants} className="md:col-span-2">
-              <label className={labelClasses} style={{ color: colors.darkBlue }}>
-                Category
-              </label>
-              <motion.select
-                whileFocus={{ scale: 1.01 }}
+            {/* Category Selection */}
+            <motion.div variants={itemVariants} className="mb-4">
+              <label className={labelClasses} style={{ color: colors.darkBlue }}>Category</label>
+              <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className={`${inputClasses} cursor-pointer`}
-                style={{ borderColor: colors.mediumBlue }}
+                className={inputClasses}
+                style={{ 
+                  borderColor: colors.lightBlue,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                }}
                 required
               >
-                <option value="">Select a category</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Software">Software</option>
-                <option value="Furniture">Furniture</option>
-                <option value="Vehicles">Vehicles</option>
-                <option value="IT & Techology">IT & Techology</option>
+                <option value="">Select a category...</option>
+                <option value="Vehicle">Vehicle</option>
                 <option value="Mobile Devices">Mobile Devices</option>
-                <option value="Other">Other</option>
-              </motion.select>
+                <option value="Furniture">Furniture</option>
+                <option value="Electronics">Electronics</option>
+                <option value="IT & Technology">IT & Technology</option>
+              </select>
             </motion.div>
             
-            <motion.div variants={itemVariants} className="md:col-span-2">
-              <label className={labelClasses} style={{ color: colors.darkBlue }}>
-                Reason for Request
-              </label>
-              <motion.textarea 
-                whileFocus={{ scale: 1.01 }}
+            {/* Reason Textarea */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <label className={labelClasses} style={{ color: colors.darkBlue }}>Request Reason</label>
+              <textarea
                 name="reason"
                 value={formData.reason}
                 onChange={handleChange}
-                className={`${inputClasses} resize-none`}
-                style={{ borderColor: colors.mediumBlue }}
-                rows="5"
-                placeholder="Explain why you need this asset"
+                placeholder="Please explain why you need this asset..."
+                rows={4}
+                className={inputClasses}
+                style={{ 
+                  borderColor: colors.lightBlue,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                }}
                 required
-              ></motion.textarea>
+              ></textarea>
             </motion.div>
             
-            <motion.div variants={itemVariants} className="md:col-span-2 mt-4">
-              <motion.button 
-                whileHover={{ scale: 1.02, backgroundColor: colors.mediumBlue }}
+            {/* Error Display */}
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 mb-4 rounded-lg text-red-800 bg-red-50 border-l-4 border-red-600"
+              >
+                <p>{error}</p>
+              </motion.div>
+            )}
+            
+            {/* Submit Button */}
+            <motion.div 
+              variants={itemVariants}
+              className="flex justify-end mt-8"
+            >
+              <motion.button
+                type="submit"
+                disabled={isSubmitting || loading}
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                type="submit" 
-                disabled={isSubmitting}
                 style={{ 
-                  backgroundColor: colors.darkBlue,
-                  opacity: isSubmitting ? 0.7 : 1
+                  backgroundColor: isSubmitting ? colors.lightBlue : colors.darkBlue,
+                  color: 'white',
                 }}
-                className="w-full py-4 rounded-xl text-white font-medium transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+                className="px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-300 hover:shadow-lg flex items-center"
               >
                 {isSubmitting ? (
                   <>
@@ -309,32 +386,9 @@ const RequestNewAsset = () => {
                     </svg>
                     Processing...
                   </>
-                ) : (
-                  'Submit Request'
-                )}
+                ) : "Submit Request"}
               </motion.button>
             </motion.div>
-            
-            {error && (
-              <motion.div 
-                variants={itemVariants}
-                className="md:col-span-2"
-              >
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  style={{
-                    color: "#e53e3e",
-                    textAlign: "center",
-                    padding: "0.75rem",
-                    borderRadius: "8px",
-                    background: "rgba(229, 62, 62, 0.1)",
-                  }}
-                >
-                  {error}
-                </motion.p>
-              </motion.div>
-            )}
           </motion.form>
         )}
       </motion.div>
