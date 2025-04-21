@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
@@ -79,61 +78,71 @@ const ViewRequestStatus = () => {
           <p style={{ color: colors.darkBlue }}>{error}</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl" style={{ boxShadow: "0 6px 12px rgba(0,31,63,0.1)" }}>
+        <div 
+          className="overflow-hidden rounded-2xl" 
+          style={{ 
+            boxShadow: "0 6px 12px rgba(0,31,63,0.1)",
+            height: "calc(80vh - 190px)", // Adjust height to fit within parent container
+            display: "flex",
+            flexDirection: "column"
+          }}
+        >
           {filteredRequests.length > 0 ? (
-            <table className="min-w-full">
-              <thead>
-                <tr style={{ backgroundColor: colors.darkBlue }}>
-                  <th className="px-6 py-4 rounded-tl-2xl" style={{ color: colors.cream }}>Asset</th>
-                  <th className="px-6 py-4" style={{ color: colors.cream }}>Status</th>
-                  <th className="px-6 py-4 rounded-tr-2xl" style={{ color: colors.cream }}>Request Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRequests.map((request, index) => (
-                  <tr 
-                    key={request._id || index}
-                    style={{ backgroundColor: index % 2 === 0 ? "rgba(255,255,255,1)" : colors.lightBlue + "15" }}
-                  >
-                    <td className="px-6 py-4 border-b" style={{ borderColor: colors.cream }}>
-                      <span className="font-medium" style={{ color: colors.darkBlue }}>
-                        {request.assetName}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 border-b" style={{ borderColor: colors.cream }}>
-                      <span 
-                        className="px-3 py-1 rounded-full text-sm inline-block font-medium"
-                        style={{
-                          backgroundColor: request.status === "Pending"
-                            ? "rgba(255,215,0,0.3)"
-                            : request.status === "Approved"
-                            ? "rgba(34,197,94,0.3)"
-                            : "rgba(239,68,68,0.3)",
-                          color: request.status === "Pending"
-                            ? "#B45309"
-                            : request.status === "Approved"
-                            ? "#166534"
-                            : "#B91C1C"
-                        }}
-                      >
-                        {request.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 border-b" style={{ borderColor: colors.cream }}>
-                      <span style={{ color: colors.mediumBlue }}>
-                        {new Date(request.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
-                      </span>
-                    </td>
+            <div className="overflow-auto h-full">
+              <table className="min-w-full">
+                <thead className="sticky top-0 z-10">
+                  <tr style={{ backgroundColor: colors.darkBlue }}>
+                    <th className="px-6 py-4 rounded-tl-2xl" style={{ color: colors.cream }}>Asset</th>
+                    <th className="px-6 py-4" style={{ color: colors.cream }}>Status</th>
+                    <th className="px-6 py-4 rounded-tr-2xl" style={{ color: colors.cream }}>Request Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredRequests.map((request, index) => (
+                    <tr 
+                      key={request._id || index}
+                      style={{ backgroundColor: index % 2 === 0 ? "rgba(255,255,255,1)" : colors.lightBlue + "15" }}
+                    >
+                      <td className="px-6 py-4 border-b" style={{ borderColor: colors.cream }}>
+                        <span className="font-medium" style={{ color: colors.darkBlue }}>
+                          {request.assetName}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 border-b" style={{ borderColor: colors.cream }}>
+                        <span 
+                          className="px-3 py-1 rounded-full text-sm inline-block font-medium"
+                          style={{
+                            backgroundColor: request.status === "Pending"
+                              ? "rgba(255,215,0,0.3)"
+                              : request.status === "Approved"
+                              ? "rgba(34,197,94,0.3)"
+                              : "rgba(239,68,68,0.3)",
+                            color: request.status === "Pending"
+                              ? "#B45309"
+                              : request.status === "Approved"
+                              ? "#166534"
+                              : "#B91C1C"
+                          }}
+                        >
+                          {request.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 border-b" style={{ borderColor: colors.cream }}>
+                        <span style={{ color: colors.mediumBlue }}>
+                          {new Date(request.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
-            <div className="p-12 text-center" style={{ backgroundColor: "rgba(255,255,255,1)" }}>
+            <div className="p-12 text-center h-full flex items-center justify-center" style={{ backgroundColor: "rgba(255,255,255,1)" }}>
               <div className="p-4 rounded-xl inline-block" style={{ backgroundColor: "rgba(234, 216, 177, 0.4)" }}>
                 <p style={{ color: colors.mediumBlue }}>No {activeTab !== "all" ? activeTab : ""} requests found.</p>
               </div>
@@ -150,5 +159,3 @@ const ViewRequestStatus = () => {
 };
 
 export default ViewRequestStatus;
-
-
