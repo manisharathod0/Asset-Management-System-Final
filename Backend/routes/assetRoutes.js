@@ -5,12 +5,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const router = express.Router();
-
-
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
-
-
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
