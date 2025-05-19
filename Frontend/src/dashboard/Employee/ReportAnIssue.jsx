@@ -202,7 +202,7 @@ const ReportAnIssue = () => {
   };
   
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-6 mt-12">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-6 mt-18">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
